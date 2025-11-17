@@ -1,0 +1,6 @@
+﻿  Game.cpp
+  main.cpp
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\main.cpp(71,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\main.cpp(132,32): warning C4244: '=': conversion from 'Uint64' to 'int', possible loss of data
+  Generating Code...
+  Multiplayer.vcxproj -> C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\x64\Debug\Multiplayer.exe
