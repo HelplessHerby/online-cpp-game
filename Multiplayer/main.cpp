@@ -78,8 +78,6 @@ static int on_send(void* socket_ptr) {
 	return 0;
 }
 
-
-
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
@@ -91,9 +89,6 @@ int main(int argc, char** argv) {
 
 	is_running = game->isRunning();
 
-
-	
-	
 	IPaddress ip;
 	if (SDLNet_ResolveHost(&ip, IP_NAME, PORT) == -1) {
 		printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
