@@ -6,6 +6,8 @@
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::playerInputEvent;
 
+Player* localPlayer;
+Player* remotePlayer;
 
 
 void Game::send(std::string message) {
@@ -22,17 +24,32 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
 		//resets player positions
 		playerPositions.clear();
 
-		for (int i = 0; i < args.size(); i++) {
+		for (size_t i = 0; i + 2 < args.size(); i += 3) {
 			std::string playerID = args[i];
-			int x = std::stoi(args[i + 1]);
-			int y = std::stoi(args[i + 2]);
+			float x = std::stof(args[i + 1]);
+			float y = std::stof(args[i + 2]);
 
-			playerPositions[playerID] = { x,y };
+			if (playerID == localplayerID) {
+				localPlayer->setPos(x, y);
+			}
+			else {
+				remotePlayer->setPos(x, y);
+			}
+
+			playerPositions[playerID] = { x, y };
+
+		}
+	}
+	else if (cmd == "ASSIGN_ID") {
+		if (!args.empty()) {
+			localplayerID = args[0];
+			std::cout << "[Client] Assigned Player ID: " << localplayerID << std::endl;
 		}
 	}
 	else {
 		std::cout << "Received: " << cmd << std::endl;
 	}
+
 }
 
 void Game::input(SDL_Event& event) {
@@ -59,17 +76,28 @@ void Game::input(SDL_Event& event) {
 		if (!msg.empty()) {
 			send(msg);
 		}
+
+		localPlayer->handleInput(msg);
+
 	}
 
 }
 
 
-void Game::update() {
-	render();
+void Game::update(float deltaTime) {
+
+	localPlayer->update(deltaTime);
+	remotePlayer->update(deltaTime);
 }
 
 void Game::render() {
+	SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+	SDL_RenderClear(renderer);
 
+	localPlayer->render(renderer);
+	remotePlayer->render(renderer);
+
+	SDL_RenderPresent(renderer);
 }
 
 
@@ -100,7 +128,20 @@ void Game::Close() {
 void Game::welcomeScreen() {
 	send("Game Welcome");
 	gameRunning = true;
+
+	localPlayer = new Player(1, 200, 200,renderer);
+	remotePlayer = new Player(2, 400, 200, renderer);
+
 }
+
+void Game::sendPlayerPos() {
+	float x, y;
+	localPlayer->getPos(x, y);
+	float rot = localPlayer->getRot();
+
+	std::string msg = "Player: ";
+}
+
 void Game::GameLoop() {
 	
 }
@@ -109,5 +150,4 @@ Game::Game() {
 
 	startSDL();
 	welcomeScreen();
-	//createGameObjects();
 }

@@ -47,6 +47,7 @@ static int on_receive(void* socket_ptr) {
 		}
 
 		game->on_receive(cmd, args);
+		std::cout << "Received: " << cmd << std::endl;
 
 		if (cmd == "exit") {
 			break;
@@ -110,7 +111,8 @@ int main(int argc, char** argv) {
 	while (game->isRunning()) {
 		frameStart = SDL_GetTicks64();
 		
-		game->update();
+		game->update(deltaTime);
+		game->render();
 
 		SDL_Event e;
 		while (SDL_PollEvent(&e)) {

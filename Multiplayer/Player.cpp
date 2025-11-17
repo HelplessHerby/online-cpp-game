@@ -1,9 +1,9 @@
 #include "Player.h"
 
-Player::Player(int id, float x, float y) : playerId(0), x(x), y(y), xVel(0), yVel(0), rot(0)
+Player::Player(int id, float x, float y, SDL_Renderer* renderer) : playerId(0), x(x), y(y), xVel(0), yVel(0), rot(0)
 {
 	SDL_Surface* tempSur = IMG_Load("assets/images/testPlayer.png");
-	spriteTexture = SDL_CreateTextureFromSurface(nullptr, tempSur);
+	spriteTexture = SDL_CreateTextureFromSurface(renderer, tempSur);
 
 	SDL_FreeSurface(tempSur);
 
@@ -22,11 +22,11 @@ void Player::getPos(float& getX, float& getY) {
 }
 
 void Player::handleInput(const std::string& input) {
-	if (input == "W_DOWN") movingForward = true;
-	if (input == "W_UP") movingForward = false;
+	if (input == "MOVE_UP_DOWN") movingForward = true;
+	if (input == "MOVE_UP_UP") movingForward = false;
 
-	if (input == "S_DOWN") movingBackward = true;
-	if (input == "S_UP") movingBackward = false;
+	if (input == "MOVE_DOWN_DOWN") movingBackward = true;
+	if (input == "MOVE_DOWN_UP") movingBackward = false;
 
 	if (input == "A_DOWN") turningLeft = true;
 	if (input == "A_UP") turningLeft = false;
@@ -36,6 +36,8 @@ void Player::handleInput(const std::string& input) {
 }
 
 void Player::update(float deltaTime) {
+
+
 	float rad = rot * (M_PI / 180.0f);
 
 	if (turningLeft) rot -= rotationSpeed * deltaTime;
@@ -50,23 +52,18 @@ void Player::update(float deltaTime) {
 		yVel += cos(rad) * acceleration * deltaTime;
 	}
 
-	float speed = sqrt(xVel * xVel + yVel * yVel);
-
-	if (speed > maxSpeed) {
-		float tempSpeed = maxSpeed / speed;
-		xVel *= tempSpeed;
-		yVel *= tempSpeed;
-	}
-
-	xVel *= drag;
-	yVel *= drag;
+	if (xVel > maxSpeed) xVel = maxSpeed;
+	if (yVel > maxSpeed) yVel = maxSpeed;
+	if (xVel < -maxSpeed) xVel = -maxSpeed;
+	if (yVel < -maxSpeed) yVel = -maxSpeed;
 
 
-	x += xVel * deltaTime;
-	y += yVel * deltaTime;
+	if (abs(xVel) > 0.1f) xVel *= drag; else xVel = 0;
+	if (abs(yVel) > 0.1f) yVel *= drag; else yVel = 0;
 
-	destRect.x = (int)x;
-	destRect.y = (int)y;
+
+	x += xVel;
+	y += yVel;
 }
 
 void Player::render(SDL_Renderer* renderer) {

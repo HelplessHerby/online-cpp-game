@@ -6,7 +6,7 @@
 
 class Player {
 public:
-	Player(int id, float x = 0, float y = 0);
+	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer  = nullptr);
 
 	void setPos(float setX, float setY);
 	void getPos(float& getX, float& getY);
@@ -29,10 +29,10 @@ private:
 	bool movingForward = false, movingBackward = false;
 	bool turningLeft = false, turningRight = false;
 
-	float acceleration = 200.0f;
+	float acceleration = 0.5f;
 	float rotationSpeed = 360.0f;
 	float drag = 0.9f;
-	float maxSpeed = 200.0f;
+	float maxSpeed = 5.0f;
 
 	SDL_Rect srcRect = { 0,0,0,0 };
 	SDL_Rect destRect = { 0,0,0,0 };

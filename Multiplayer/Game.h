@@ -2,6 +2,7 @@
 
 
 #include "SDL.h"
+#include "Player.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -16,17 +17,12 @@
 #define COLUMNS = 25
 #define FPS 60
 
-static struct GameData {
-	float p1PosX = 0, p1PosY = 0;
-	float p2PosX = 0, p2PosY = 0;
-	int playerId;
-} game_data;
-
 class Game {
 private:
 	SDL_Rect player1Rect;
 	bool gameRunning = false;
 	SDL_Window* gameWindow = nullptr;
+	std::string localplayerID;
 public:
 	Game();
 	void startSDL();
@@ -34,7 +30,7 @@ public:
 	void input(SDL_Event& event);
 	void send(std::string message);
 	void on_receive(std::string message, std::vector<std::string>& args);
-	void update();
+	void update(float deltaTime);
 	void welcomeScreen();
 	void GameLoop();
 	void render();
@@ -42,6 +38,7 @@ public:
 	void Close();
 	static SDL_Renderer* renderer;
 	static SDL_Event playerInputEvent;
+	void sendPlayerPos();
 	std::map<std::string, std::pair<int, int>> playerPositions;
 	std::map<SDL_Keycode, bool> keyDown;
 };

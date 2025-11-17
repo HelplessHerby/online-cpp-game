@@ -1,2 +1,19 @@
 ﻿  Game.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\utility(247,16): warning C4244: 'initializing': conversion from 'float' to '_Ty1', possible loss of data
+          with
+          [
+              _Ty1=int
+          ]
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(39,32): message : see reference to function template instantiation 'std::pair<int,int>::pair<float&,float&,0>(_Other1,_Other2) noexcept' being compiled
+          with
+          [
+              _Other1=float &,
+              _Other2=float &
+          ]
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(39,30): message : see the first reference to 'std::pair<int,int>::pair' in 'Game::on_receive'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\utility(247,54): warning C4244: 'initializing': conversion from 'float' to '_Ty2', possible loss of data
+          with
+          [
+              _Ty2=int
+          ]
   Multiplayer.vcxproj -> C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\x64\Debug\Multiplayer.exe
