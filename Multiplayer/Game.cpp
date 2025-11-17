@@ -48,7 +48,13 @@ void Game::input(SDL_Event& event) {
 
 		switch (key) {
 		case SDLK_w:
-			msg = isDown ? "MOVE_UP_DOWN" : "MOVE_UP_UP";
+			msg = isDown ? "MOVE_UP_DOWN" : "MOVE_UP_UP"; break;
+		case SDLK_s:
+			msg = isDown ? "MOVE_DOWN_DOWN" : "MOVE_DOWN_UP"; break;
+		case SDLK_a:
+			msg = isDown ? "TURN_LEFT_DOWN" : "TURN_LEFT_UP"; break;
+		case SDLK_d:
+			msg = isDown ? "TURN_RIGHT_DOWN" : "TURN_RIGHT_UP"; break;
 		}
 		if (!msg.empty()) {
 			send(msg);
