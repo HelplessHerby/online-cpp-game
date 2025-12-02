@@ -6,11 +6,15 @@ import java.util.Map;
 public class GameServer {
 
     private static int playerCount = 1;
-    private static Map<Socket,String> playerMap = new HashMap<>();
+    private static Map<String, PlayerManagement> players = new HashMap<>();
+    private static Map<Socket, String> socketToID = new HashMap<>();
 
     public static void main(String[] args) {
         int port = 55555; 
         System.out.println("[Server] Starting on port " + port);
+
+        Thread gameLoopThread = new Thread(new GameLoop(players,socketToID));
+        gameLoopThread.start();
 
         try (ServerSocket server = new ServerSocket(port)) {
             System.out.println("[Server] Waiting for clients...");
@@ -29,30 +33,28 @@ public class GameServer {
     private static void handleNewPlayer(Socket socket){
         new Thread(() -> {
             try{
-
+                //Assign ID
                 String playerID = assignPlayerID(socket);
+                //Assign player
+                PlayerManagement newPlayer = new PlayerManagement();
+                players.put(playerID, newPlayer);
+                //Input Output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 
-                handlePlayerMessages(socket, playerID, in, out);
+                out.println("ASSIGN_ID," + playerID);
 
-                in.close();
-                out.close();
-                socket.close();
-                playerMap.remove(socket);
+                handlePlayerMessages(socket, playerID, in, out);
             } catch(IOException e){
                 e.printStackTrace();
             }
         }).start();
     }
 
-
-    private static String assignPlayerID(Socket socket) throws IOException{
+    private static String assignPlayerID(Socket socket){
         String playerID = "Player: " + playerCount++;
-        playerMap.put(socket, playerID);
+        socketToID.put(socket, playerID);
 
-        PrintWriter out = new PrintWriter(socket.getOutputStream(),true);
-        out.println("ASSIGN_ID," + playerID);
         System.out.println("[Server] Assigned " + playerID + " to " + socket.getInetAddress());
 
         return playerID;
@@ -67,13 +69,16 @@ public class GameServer {
 
                 if(message.startsWith("CLIENT_DATA")){
                     String[] parts = message.split(",");
+
+                    PlayerManagement player = players.get(playerID);
+
                     for (int i = 1; i < parts.length; i++) { 
                         String action = parts[i].trim();
                         if (!action.isEmpty()) {
                             System.out.println("[Server] " + playerID + " sent: " + action);
+                            player.applyInput(action);
                         }
                     }
-                
                 }
                 if(message.startsWith("exit")){
                     System.out.println("[Server]  " + playerID + " disconnected.");
@@ -92,9 +97,9 @@ public class GameServer {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        socketToID.remove(socket);
         playerCount--;
-        playerMap.remove(socket);
-    
+        
     }
     }
 }

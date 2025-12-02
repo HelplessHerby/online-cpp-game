@@ -19,18 +19,24 @@ void Game::send(std::string message) {
 }
 
 void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
+	
 	if (cmd == "GAME_DATA") {
 
 		//resets player positions
 		playerPositions.clear();
 
+
+
 		for (size_t i = 0; i + 2 < args.size(); i += 3) {
 			std::string playerID = args[i];
 			float x = std::stof(args[i + 1]);
 			float y = std::stof(args[i + 2]);
+			float rot = std::stoi(args[i + 3]);
+
 
 			if (playerID == localplayerID) {
 				localPlayer->setPos(x, y);
+				//localPlayer->setRot(rot); need to implement rotation
 			}
 			else {
 				remotePlayer->setPos(x, y);
