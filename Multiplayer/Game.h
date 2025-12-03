@@ -22,7 +22,7 @@ private:
 	SDL_Rect player1Rect;
 	bool gameRunning = false;
 	SDL_Window* gameWindow = nullptr;
-	std::string localplayerID;
+	int localplayerID;
 public:
 	Game();
 	void startSDL();

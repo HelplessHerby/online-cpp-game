@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 	IPaddress ip;
 	if (SDLNet_ResolveHost(&ip, IP_NAME, PORT) == -1) {
 		printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-		exit(3);
+		//exit(3);
 	}
 	TCPsocket socket = SDLNet_TCP_Open(&ip);
 	

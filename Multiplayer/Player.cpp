@@ -11,9 +11,10 @@ Player::Player(int id, float x, float y, SDL_Renderer* renderer) : playerId(0), 
 	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
 }
 
-void Player::setPos(float setX, float setY) {
-	x = setX;
-	y = setY;
+void Player::setPos(float setX, float setY,float setRot) {
+	destRect.x = setX;
+	destRect.y = setY;
+	rot = setRot;
 }
 
 void Player::getPos(float& getX, float& getY) {
@@ -36,34 +37,6 @@ void Player::handleInput(const std::string& input) {
 }
 
 void Player::update(float deltaTime) {
-
-
-	float rad = rot * (M_PI / 180.0f);
-
-	if (turningLeft) rot -= rotationSpeed * deltaTime;
-	if (turningRight) rot += rotationSpeed * deltaTime;
-
-	if (movingForward) {
-		xVel += std::sin(rad) * acceleration * deltaTime;
-		yVel -= std::cos(rad) * acceleration * deltaTime;
-	}
-	if (movingBackward) {
-		xVel -= sin(rad) * acceleration * deltaTime;
-		yVel += cos(rad) * acceleration * deltaTime;
-	}
-
-	if (xVel > maxSpeed) xVel = maxSpeed;
-	if (yVel > maxSpeed) yVel = maxSpeed;
-	if (xVel < -maxSpeed) xVel = -maxSpeed;
-	if (yVel < -maxSpeed) yVel = -maxSpeed;
-
-
-	if (abs(xVel) > 0.1f) xVel *= drag; else xVel = 0;
-	if (abs(yVel) > 0.1f) yVel *= drag; else yVel = 0;
-
-
-	x += xVel;
-	y += yVel;
 }
 
 void Player::render(SDL_Renderer* renderer) {

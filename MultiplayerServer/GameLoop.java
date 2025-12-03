@@ -13,9 +13,7 @@ public class GameLoop implements Runnable{
 
     @Override
     public void run(){
-        float accel = 0.5f;
-        float maxSpeed = 4f;
-        float rotationSpeed = 3f;
+
 
         while(true){
 
@@ -24,33 +22,9 @@ public class GameLoop implements Runnable{
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
 
+                p.movement();    	
 
-                //Rotation
-                if(p.left) p.rot -= rotationSpeed;
-                if(p.right) p.rot += rotationSpeed;
-
-                double rad = Math.toRadians(p.rot);
-
-                //Forward Back Movement
-                if(p.up){
-                    p.velX += Math.cos(rad) * accel; 
-                    p.velY -= Math.sin(rad) * accel;
-                }
-                if(p.down){
-                    p.velX -= Math.cos(rad) * accel;
-                    p.velY += Math.sin(rad) * accel;
-                }
-
-                float speed = (float)Math.sqrt(p.velX*p.velX + p.velY*p.velY);
-
-                if(speed > maxSpeed){
-                    float scale = maxSpeed / speed;
-                    p.velX *= scale;
-                    p.velY *= scale;
-                }
-
-                p.x += p.velX;
-                p.y += p.velY;
+                    
             }
 
             sendGameData();

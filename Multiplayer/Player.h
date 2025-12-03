@@ -8,7 +8,7 @@ class Player {
 public:
 	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer  = nullptr);
 
-	void setPos(float setX, float setY);
+	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float& getY);
 
 	void handleInput(const std::string& input);
