@@ -1,16 +1,18 @@
 ﻿  Game.cpp
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(32,81): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(32,60): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\utility(247,16): warning C4244: 'initializing': conversion from 'float' to '_Ty1', possible loss of data
           with
           [
               _Ty1=int
           ]
-C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(62,31): message : see reference to function template instantiation 'std::pair<int,int>::pair<float&,float&,0>(_Other1,_Other2) noexcept' being compiled
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(66,31): message : see reference to function template instantiation 'std::pair<int,int>::pair<float&,float&,0>(_Other1,_Other2) noexcept' being compiled
           with
           [
               _Other1=float &,
               _Other2=float &
           ]
-C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(62,29): message : see the first reference to 'std::pair<int,int>::pair' in 'Game::on_receive'
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(66,29): message : see the first reference to 'std::pair<int,int>::pair' in 'Game::on_receive'
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\utility(247,54): warning C4244: 'initializing': conversion from 'float' to '_Ty2', possible loss of data
           with
           [

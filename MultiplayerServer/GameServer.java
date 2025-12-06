@@ -89,6 +89,7 @@ public class GameServer {
 
     } catch (IOException e){
         System.out.println("[Server] " + playerID + " disconnected abruptly.");
+        players.remove(playerID);
     } finally {
         try {
             in.close();

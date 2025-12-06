@@ -12,7 +12,6 @@ public:
 	void getPos(float& getX, float& getY);
 
 	void handleInput(const std::string& input);
-	void update(float deltaTime);
 	void render(SDL_Renderer* renderer);
 
 	float getX() const { return x; }

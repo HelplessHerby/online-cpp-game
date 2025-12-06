@@ -36,8 +36,6 @@ void Player::handleInput(const std::string& input) {
 	if (input == "D_UP") turningRight = false;
 }
 
-void Player::update(float deltaTime) {
-}
 
 void Player::render(SDL_Renderer* renderer) {
 	SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);

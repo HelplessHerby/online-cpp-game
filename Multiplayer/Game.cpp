@@ -28,41 +28,45 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
 				return;
 			}
 			localplayerID = std::stoi(localPlayerStr.substr(pos + 1));
-
+			if (localplayerID <= 4) {
+				players[localplayerID] = new Player(localplayerID, 200 * localplayerID, 200 * localplayerID, renderer);
+				std::cout << "[Client] Assigned Player ID: " << localplayerID << std::endl;
+			}
+			else {
+				std::cout << "Too Many Players";
+			}
 			
-			std::cout << "[Client] Assigned Player ID: " << localplayerID << std::endl;
 			
 	}
-	else if (cmd == "GAME_DATA") {
-
-		//resets player positions
-		//playerPositions.clear();
-		std::string localPlayerStr = args[0];
-		size_t pos = localPlayerStr.find(":");
-		if (pos == std::string::npos) {
-			std::cerr << "[Client] ERROR: ASSIGN_ID missing colon in: "
-				<< localPlayerStr << std::endl;
-			return;
-		}
-		int ID = std::stoi(localPlayerStr.substr(pos + 1));
-
-		for (size_t i = 0; i + 3 < args.size(); i += 4) {
+	else if (cmd == "GAME_DATA")
+	{
+		for (size_t i = 0; i + 3 < args.size(); i += 4)
+		{
+			std::string idStr = args[i];
+			size_t pos = idStr.find(":");
+			if (pos == std::string::npos) continue; 
+			int playerID = std::stoi(idStr.substr(pos + 1));
 
 			float x = std::stof(args[i + 1]);
 			float y = std::stof(args[i + 2]);
 			float rot = std::stof(args[i + 3]);
-			
-			std::cout << "id: " << localplayerID << " x: " << x << " y: " << y << " rot: " << rot << "\n";
-			if (ID >= 0 && ID < 4 && players[ID] != nullptr) {
-				players[ID]->setPos(x, y, rot);
 
+			if (playerID >= 0 && playerID < 5)
+			{
+				if (players[playerID] == nullptr)
+				{
+					players[playerID] = new Player(playerID, x, y, renderer);
+				}
+				else
+				{
+					players[playerID]->setPos(x, y, rot);
+				}
 			}
-
-
+			std::cout << "id: " << localplayerID << " x: " << x << " y: " << y << " rot: " << rot << "\n";
 			playerPositions[args[i]] = { x, y };
-
 		}
 	}
+
 
 	else {
 		std::cout << "Received: " << cmd << std::endl;
@@ -95,7 +99,12 @@ void Game::input(SDL_Event& event) {
 			send(msg);
 		}
 
-		players[0]->handleInput(msg);
+		for (Player* p : players) {
+			if (p != nullptr) {
+				p->handleInput(msg);
+			}
+		}
+
 
 	}
 
@@ -110,10 +119,11 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
 	SDL_RenderClear(renderer);
 
-	players[0]->render(renderer);
-	players[1]->render(renderer);
-	players[2]->render(renderer);
-	players[3]->render(renderer);
+	for (Player* p : players) {
+		if (p != nullptr) {
+			p->render(renderer);
+		}
+	}
 
 
 	SDL_RenderPresent(renderer);
@@ -148,18 +158,20 @@ void Game::welcomeScreen() {
 	send("Game Welcome");
 	gameRunning = true;
 
-	players[0] = new Player(1, 200, 200, renderer);
-	players[1] = new Player(2, 400, 200, renderer);
-	players[2] = new Player(3, 400, 400, renderer);
-	players[3] = new Player(4, 600, 600, renderer);
 
 }
 
 void Game::sendPlayerPos() {
-	float x, y;
-	players[0]->getPos(x, y);
-	float rot = players[1]->getRot();
+	
+	
+	for (Player* p : players) {
+		if (p != nullptr) {
+			float x, y;
+			p->getPos(x, y);
+			float rot = p->getRot();
 
+		}
+	}
 	std::string msg = "Player: ";
 }
 
