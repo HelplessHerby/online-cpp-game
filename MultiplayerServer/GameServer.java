@@ -60,6 +60,24 @@ public class GameServer {
         return playerID;
     }
 
+    private static void removePlayer(Socket socket, String playerID){
+        System.out.println("[Server] Removing Player: " + playerID);
+
+        players.remove(playerID);
+
+        socketToID.remove(socket);
+
+        playerCount--;
+
+        System.out.println(playerCount);
+        try{
+            if(!socket.isClosed()) socket.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
     private static void handlePlayerMessages(Socket socket, String playerID, BufferedReader in, PrintWriter out) throws IOException{
         try{
             String message;
@@ -82,14 +100,15 @@ public class GameServer {
                 }
                 if(message.startsWith("exit")){
                     System.out.println("[Server]  " + playerID + " disconnected.");
+                    removePlayer(socket, playerID);
                     break;
             }
         }
         
 
     } catch (IOException e){
+        removePlayer(socket, playerID);
         System.out.println("[Server] " + playerID + " disconnected abruptly.");
-        players.remove(playerID);
     } finally {
         try {
             in.close();
@@ -98,8 +117,6 @@ public class GameServer {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        socketToID.remove(socket);
-        playerCount--;
         
     }
     }

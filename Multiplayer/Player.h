@@ -6,7 +6,7 @@
 
 class Player {
 public:
-	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer  = nullptr);
+	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 
 	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float& getY);

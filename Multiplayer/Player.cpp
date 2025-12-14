@@ -11,7 +11,7 @@ Player::Player(int id, float x, float y, SDL_Renderer* renderer) : playerId(0), 
 	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
 }
 
-void Player::setPos(float setX, float setY,float setRot) {
+void Player::setPos(float setX, float setY, float setRot) {
 	destRect.x = setX;
 	destRect.y = setY;
 	rot = setRot;

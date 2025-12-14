@@ -32,10 +32,8 @@ static int on_receive(void* socket_ptr) {
 		char* context = nullptr;
 		char* pch = strtok_s(message, ",", &context);
 
-		// get the command, which is the first string in the message
 		std::string cmd(pch);
 
-		// then get the arguments to the command
 		std::vector<std::string> args;
 
 		while (pch != NULL) {
@@ -68,7 +66,7 @@ static int on_send(void* socket_ptr) {
 
 			game->messages.clear();
 
-			message += "\n"; // critical for Java readLine()
+			message += "\n"; 
 			SDLNet_TCP_Send(socket, message.c_str(), message.length());
 
 			std::cout << "[Client] Sent: " << message;
@@ -93,7 +91,7 @@ int main(int argc, char** argv) {
 	IPaddress ip;
 	if (SDLNet_ResolveHost(&ip, IP_NAME, PORT) == -1) {
 		printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-		//exit(3);
+		exit(3);
 	}
 	TCPsocket socket = SDLNet_TCP_Open(&ip);
 	
@@ -119,10 +117,7 @@ int main(int argc, char** argv) {
 			if (e.type == SDL_QUIT) {
 				game->Close();
 				is_running = false;
-				SDLNet_TCP_Close(socket);
-
-			}
-				
+			}			
 			game->input(e);
 		}
 		//Limit FPS
@@ -134,12 +129,12 @@ int main(int argc, char** argv) {
 	SDL_WaitThread(sendThread, nullptr);
 	//Delete Game
 	
+	SDLNet_TCP_Close(socket);
+	delete game;
 
-	SDLNet_Quit();
 
 	SDL_Quit();
-	
-
+	SDLNet_Quit();
 	return 0;
 }
 
