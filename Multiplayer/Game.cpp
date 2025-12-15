@@ -166,9 +166,8 @@ void Game::welcomeScreen() {
 
 void Game::sendPlayerPos() {
     for (auto& p : players) {
-        float x, y;
-        p.second->getPos(x, y);
-        float rot = p.second->getRot();
+        float x, y, rot;
+        p.second->getPos(x, y, rot);
     }
 }
 

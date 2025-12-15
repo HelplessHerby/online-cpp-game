@@ -9,7 +9,7 @@ public:
 	GameObject(float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 
 	void setPos(float setX, float setY, float setRot);
-	void getPos(float& getX, float getY, float getRot);
+	void getPos(float& getX, float& getY, float& getRot);
 
 	void render(SDL_Renderer* renderer);
 

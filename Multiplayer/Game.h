@@ -2,7 +2,7 @@
 
 
 #include "SDL.h"
-#include "Player.h"
+#include "GameObjects.h"
 #include <string>
 #include <vector>
 #include <iostream>
