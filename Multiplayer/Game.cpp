@@ -88,11 +88,11 @@ void Game::input(SDL_Event& event) {
 
     SDL_Keycode key = event.key.keysym.sym;
     bool isDown = (event.type == SDL_KEYDOWN);
+    std::string msg;
 
     if (keyDown[key] != isDown) {
         keyDown[key] = isDown;
 
-        std::string msg;
 
         switch (key) {
         case SDLK_w: msg = isDown ? "MOVE_UP_DOWN" : "MOVE_UP_UP"; break;
@@ -100,15 +100,18 @@ void Game::input(SDL_Event& event) {
         case SDLK_a: msg = isDown ? "TURN_LEFT_DOWN" : "TURN_LEFT_UP"; break;
         case SDLK_d: msg = isDown ? "TURN_RIGHT_DOWN" : "TURN_RIGHT_UP"; break;
         case SDLK_SPACE: msg = isDown ? "SHOOT_DOWN" : "SHOOT_UP"; break;
-        }
 
-        if (!msg.empty()) {
-            send(msg);
         }
+    }
+    int mouseXpos, mouseYpos;
+    SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
+    std::cout << "x: " << mouseXpos << " y: " << mouseYpos;
+    if (!msg.empty()) {
+        send(msg);
+    }
 
-        for (auto& kv : players) {
-            kv.second->handleInput(msg);
-        }
+    for (auto& kv : players) {
+        kv.second->handleInput(msg);
     }
 }
 

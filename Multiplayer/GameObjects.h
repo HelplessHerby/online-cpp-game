@@ -11,16 +11,19 @@ public:
 	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float getY, float getRot);
 
-	void render(SDL_Renderer renderer);
+	void render(SDL_Renderer* renderer);
 
 	float getX() const { return x; }
 	float getY() const { return y; }
 	float getRot() const { return rot; }
-private:
+protected:
 	float x, y;
 	float xVel, yVel;
 	float rot;
-
+	float acceleration;
+	float rotationSpeed;
+	float drag = 0.9f;
+	float maxSpeed;
 
 	SDL_Rect srcRect = { 0,0,0,0 };
 	SDL_Rect destRect = { 0,0,0,0 };
