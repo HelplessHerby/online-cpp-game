@@ -11,7 +11,9 @@ public:
 	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float& getY, float& getRot);
 
-	void render(SDL_Renderer* renderer);
+	virtual void render(SDL_Renderer* renderer) {
+		SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
+	};
 
 	float getX() const { return x; }
 	float getY() const { return y; }
@@ -33,15 +35,25 @@ class Player : public GameObject {
 public:
 	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 	void handleInput(const std::string& input);
+	void rotateBarrel();
+	void render(SDL_Renderer* renderer);
+	void setMousePos(int mouseXPos, int mouseYPos);
 private:
 	int playerId;
 
 	bool movingForward = false, movingBackward = false, turningLeft = false, turningRight = false;
 
+	float barRot;
 	float acceleration = 0.5f;
 	float rotationSpeed = 360.0f;
 	float drag = 0.9f;
 	float maxSpeed = 5.0f;
+	float mouseX = 0, mouseY = 0 ;
+
+
+	SDL_Rect barSrcRect = { 0,0,0,0 };
+	SDL_Texture* barTexture = nullptr;
+
 };
 class Bullet : public GameObject {
 public:

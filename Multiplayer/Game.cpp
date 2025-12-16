@@ -105,7 +105,7 @@ void Game::input(SDL_Event& event) {
     }
     int mouseXpos, mouseYpos;
     SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
-    std::cout << "x: " << mouseXpos << " y: " << mouseYpos;
+    players[localplayerID]->setMousePos(mouseXpos, mouseYpos);
     if (!msg.empty()) {
         send(msg);
     }
@@ -116,6 +116,12 @@ void Game::input(SDL_Event& event) {
 }
 
 void Game::update(float deltaTime) {
+
+    //local barrel rotations
+    auto it = players.find(localplayerID);
+    if (it != players.end() && it->second != nullptr) {
+        it->second->rotateBarrel();
+    }
 }
 
 void Game::render() {

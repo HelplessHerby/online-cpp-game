@@ -16,24 +16,37 @@ void GameObject::getPos(float& getX, float& getY, float& getRot){
 	getRot = rot;
 }
 
-void GameObject::render(SDL_Renderer* renderer){
-	SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
-}
-
-
 
 
 Player::Player(int id, float x, float y, SDL_Renderer* renderer) : GameObject(x, y, renderer), playerId(id) {
-	SDL_Surface* tempSur = IMG_Load("assets/images/testPlayer.png");
-	spriteTexture = SDL_CreateTextureFromSurface(renderer, tempSur);
+	
+	SDL_Surface* playerSur = IMG_Load("assets/images/testPlayer.png");
+	spriteTexture = SDL_CreateTextureFromSurface(renderer, playerSur);
 
-	SDL_FreeSurface(tempSur);
+	SDL_FreeSurface(playerSur);
 
 	srcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
 	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
+	
+	SDL_Surface* barSur = IMG_Load("assets/images/playerBarrel.png");
+	barTexture = SDL_CreateTextureFromSurface(renderer, barSur);
+
+	SDL_FreeSurface(barSur);
+
+	barSrcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
+
 }
 
+void Player::setMousePos(int mouseXPos, int mouseYPos) {
+	mouseX = mouseXPos;
+	mouseY = mouseYPos;
+}
 
+void Player::render(SDL_Renderer* renderer) {
+	SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(renderer,  barTexture, &barSrcRect, &destRect, barRot, nullptr, SDL_FLIP_NONE);
+
+}
 
 void Player::handleInput(const std::string& input) {
 	if (input == "MOVE_UP_DOWN") this->movingForward = true;
@@ -47,4 +60,15 @@ void Player::handleInput(const std::string& input) {
 
 	if (input == "D_DOWN") this->turningRight = true;
 	if (input == "D_UP") this->turningRight = false;
+}
+
+void Player::rotateBarrel(){
+	float dx = mouseX - this->getX();
+	float dy = mouseY - this->getY();
+
+	float angleRad = std::atan2(dy, dx);
+	float angleDeg = angleRad * 180.0f / M_PI;
+	
+	barRot = angleDeg;
+	std::cout << barRot;
 }
