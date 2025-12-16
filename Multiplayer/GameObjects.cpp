@@ -1,7 +1,7 @@
 #include "GameObjects.h"
 
 
-GameObject::GameObject(float x, float y, SDL_Renderer* renderer) : x(x), y(y), rot(0.0f) {
+GameObject::GameObject(const char* textureName, float x, float y, SDL_Renderer* renderer) : x(x), y(y), rot(0.0f) {
 }
 
 void GameObject::setPos(float setX, float setY, float setRot) {
@@ -18,9 +18,9 @@ void GameObject::getPos(float& getX, float& getY, float& getRot){
 
 
 
-Player::Player(int id, float x, float y, SDL_Renderer* renderer) : GameObject(x, y, renderer), playerId(id) {
+Player::Player(const char* textureName,int id, float x, float y, SDL_Renderer* renderer) : GameObject(textureName,x, y, renderer), playerId(id) {
 	
-	SDL_Surface* playerSur = IMG_Load("assets/images/testPlayer.png");
+	SDL_Surface* playerSur = IMG_Load(textureName);
 	spriteTexture = SDL_CreateTextureFromSurface(renderer, playerSur);
 
 	SDL_FreeSurface(playerSur);

@@ -6,7 +6,7 @@
 
 class GameObject {
 public:
-	GameObject(float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
+	GameObject(const char* textureName , float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 
 	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float& getY, float& getRot);
@@ -26,14 +26,13 @@ protected:
 	float rotationSpeed;
 	float drag = 0.9f;
 	float maxSpeed;
-
 	SDL_Rect srcRect = { 0,0,0,0 };
 	SDL_Rect destRect = { 0,0,0,0 };
 	SDL_Texture* spriteTexture = nullptr;
 };
 class Player : public GameObject {
 public:
-	Player(int id, float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
+	Player(const char* textureName,int id, float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 	void handleInput(const std::string& input);
 	void rotateBarrel();
 	void render(SDL_Renderer* renderer);

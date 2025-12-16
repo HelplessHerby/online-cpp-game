@@ -166,6 +166,9 @@ void Game::Close() {
 }
 
 void Game::welcomeScreen() {
+    background = new GameObject()
+
+
     send("Game Welcome");
     gameRunning = true;
 }
