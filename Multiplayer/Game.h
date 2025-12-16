@@ -22,7 +22,6 @@ private:
 	SDL_Rect player1Rect;
 	bool gameRunning = false;
 	SDL_Window* gameWindow = nullptr;
-	GameObject* background = nullptr;
 	int localplayerID;
 public:
 	Game();

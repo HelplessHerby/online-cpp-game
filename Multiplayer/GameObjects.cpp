@@ -34,7 +34,6 @@ Player::Player(const char* textureName,int id, float x, float y, SDL_Renderer* r
 	SDL_FreeSurface(barSur);
 
 	barSrcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
-
 }
 
 void Player::setMousePos(int mouseXPos, int mouseYPos) {
@@ -44,7 +43,7 @@ void Player::setMousePos(int mouseXPos, int mouseYPos) {
 
 void Player::render(SDL_Renderer* renderer) {
 	SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
-	SDL_RenderCopyEx(renderer,  barTexture, &barSrcRect, &destRect, barRot, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(renderer,  barTexture, &barSrcRect, &destRect, barRot, &barPivot, SDL_FLIP_NONE);
 
 }
 
@@ -63,12 +62,17 @@ void Player::handleInput(const std::string& input) {
 }
 
 void Player::rotateBarrel(){
-	float dx = mouseX - this->getX();
-	float dy = mouseY - this->getY();
+
+	float centerX = destRect.x + destRect.w * 0.5f;
+	float centerY = destRect.y + destRect.h * 0.5f;
+
+	float dx = mouseX - centerX;
+	float dy = mouseY - centerY;
 
 	float angleRad = std::atan2(dy, dx);
 	float angleDeg = angleRad * 180.0f / M_PI;
 	
 	barRot = angleDeg;
+	barRot += 90;
 	std::cout << barRot;
 }

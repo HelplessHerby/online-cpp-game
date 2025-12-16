@@ -37,6 +37,10 @@ public:
 	void rotateBarrel();
 	void render(SDL_Renderer* renderer);
 	void setMousePos(int mouseXPos, int mouseYPos);
+	SDL_Point barPivot = {
+		32 / 2,
+		32 - 15
+	};
 private:
 	int playerId;
 
@@ -52,6 +56,8 @@ private:
 
 	SDL_Rect barSrcRect = { 0,0,0,0 };
 	SDL_Texture* barTexture = nullptr;
+
+
 
 };
 class Bullet : public GameObject {

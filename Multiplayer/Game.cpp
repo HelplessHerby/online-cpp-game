@@ -6,6 +6,8 @@ SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::playerInputEvent;
 
 std::unordered_map<int, Player*> players;
+GameObject* background = nullptr;
+
 
 void Game::send(std::string message) {
     if (!message.empty()) {
@@ -30,7 +32,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         std::cout << "[Client] Assigned Player ID: " << localplayerID << std::endl;
 
         if (players.find(localplayerID) == players.end()) {
-            players[localplayerID] = new Player(localplayerID,
+            players[localplayerID] = new Player("assets/images/testPlayer.png", localplayerID,
                 200 * localplayerID, // x pos
                 200 * localplayerID, // y pos
                 renderer);
@@ -55,7 +57,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             serverIds.insert(playerID);
 
             if (players.find(playerID) == players.end()) {
-                players[playerID] = new Player(playerID, x, y, renderer);
+                players[playerID] = new Player("assets/images/testPlayer.png",playerID, x, y, renderer);
             }
 
             players[playerID]->setPos(x, y, rot);
@@ -104,8 +106,11 @@ void Game::input(SDL_Event& event) {
         }
     }
     int mouseXpos, mouseYpos;
-    SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
-    players[localplayerID]->setMousePos(mouseXpos, mouseYpos);
+    SDL_GetMouseState(&mouseXpos, &mouseYpos);
+    auto it = players.find(localplayerID);
+    if (it != players.end() && it->second != nullptr) { // Checks to see if local player exists yet
+        it->second->setMousePos(mouseXpos,mouseYpos);
+    }
     if (!msg.empty()) {
         send(msg);
     }
@@ -143,7 +148,7 @@ void Game::startSDL() {
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
             0);
-
+        
         renderer = SDL_CreateRenderer(gameWindow, -1, 0);
         gameRunning = true;
         send("Game Created");
@@ -166,7 +171,7 @@ void Game::Close() {
 }
 
 void Game::welcomeScreen() {
-    background = new GameObject()
+    background = new GameObject("assets/images/background.png",0,0,renderer);
 
 
     send("Game Welcome");
