@@ -30,7 +30,7 @@ public:
 	void input(SDL_Event& event);
 	void send(std::string message);
 	void on_receive(std::string message, std::vector<std::string>& args);
-	void update(float deltaTime);
+	void update(float deltaTime, SDL_Event e);
 	void welcomeScreen();
 	void GameLoop();
 	void render();
@@ -38,7 +38,7 @@ public:
 	void Close();
 	static SDL_Renderer* renderer;
 	static SDL_Event playerInputEvent;
-	void sendPlayerPos();
+	void sendPlayerData();
 	std::map<std::string, std::pair<int, int>> playerPositions;
 	std::map<SDL_Keycode, bool> keyDown;
 };

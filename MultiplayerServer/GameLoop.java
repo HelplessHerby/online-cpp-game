@@ -22,9 +22,7 @@ public class GameLoop implements Runnable{
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
 
-                p.movement();    	
-
-                    
+                p.movement();    	                   
             }
 
             sendGameData();

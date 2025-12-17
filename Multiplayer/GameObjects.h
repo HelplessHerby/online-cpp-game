@@ -10,7 +10,7 @@ public:
 
 	void setPos(float setX, float setY, float setRot);
 	void getPos(float& getX, float& getY, float& getRot);
-
+	void setSize(int pWidth, int pHeight);
 	virtual void render(SDL_Renderer* renderer) {
 		SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
 	};
@@ -41,12 +41,12 @@ public:
 		32 / 2,
 		32 - 15
 	};
+	float barRot;
 private:
 	int playerId;
 
 	bool movingForward = false, movingBackward = false, turningLeft = false, turningRight = false;
 
-	float barRot;
 	float acceleration = 0.5f;
 	float rotationSpeed = 360.0f;
 	float drag = 0.9f;

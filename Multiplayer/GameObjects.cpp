@@ -2,6 +2,13 @@
 
 
 GameObject::GameObject(const char* textureName, float x, float y, SDL_Renderer* renderer) : x(x), y(y), rot(0.0f) {
+	SDL_Surface* objectSur = IMG_Load(textureName);
+	spriteTexture = SDL_CreateTextureFromSurface(renderer, objectSur);
+
+	SDL_FreeSurface(objectSur);
+
+	srcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
+	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
 }
 
 void GameObject::setPos(float setX, float setY, float setRot) {
@@ -16,9 +23,18 @@ void GameObject::getPos(float& getX, float& getY, float& getRot){
 	getRot = rot;
 }
 
+void GameObject::setSize(int pWidth, int pHeight) // if sprite is non standard size
+{
+	// The source file
+	srcRect.w = pWidth;
+	srcRect.h = pHeight;
 
+	// Destination Screen display 
+	destRect.w = pWidth * SPRITE_SCREEN_SIZE / SPRITE_SIZE;
+	destRect.h = pHeight * SPRITE_SCREEN_SIZE / SPRITE_SIZE;
+}
 
-Player::Player(const char* textureName,int id, float x, float y, SDL_Renderer* renderer) : GameObject(textureName,x, y, renderer), playerId(id) {
+Player::Player(const char* textureName,int id, float x, float y, SDL_Renderer* renderer) : GameObject(textureName,x, y, renderer), playerId(id), barRot(0) {
 	
 	SDL_Surface* playerSur = IMG_Load(textureName);
 	spriteTexture = SDL_CreateTextureFromSurface(renderer, playerSur);
@@ -74,5 +90,4 @@ void Player::rotateBarrel(){
 	
 	barRot = angleDeg;
 	barRot += 90;
-	std::cout << barRot;
 }

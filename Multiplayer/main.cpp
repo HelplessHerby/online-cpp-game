@@ -105,11 +105,10 @@ int main(int argc, char** argv) {
 
 	// Handle Game Behaviour
 
-
+	game->welcomeScreen();
 	while (game->isRunning()) {
 		frameStart = SDL_GetTicks64();
 		
-		game->update(deltaTime);
 		game->render();
 
 		SDL_Event e;
@@ -118,7 +117,8 @@ int main(int argc, char** argv) {
 				game->Close();
 				is_running = false;
 			}			
-			game->input(e);
+			game->update(deltaTime, e);
+
 		}
 		//Limit FPS
 		deltaTime = SDL_GetTicks64() - frameStart;

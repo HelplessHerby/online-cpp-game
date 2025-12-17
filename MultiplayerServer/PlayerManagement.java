@@ -12,6 +12,7 @@ public class PlayerManagement{
 
     public float rot = 0;
     public float rotationSpeed = 360f;
+    public float barrelRot = 0;
     float acceleration = 0.5f;
     float maxSpeed = 5f;
 	float drag = 0.9f;

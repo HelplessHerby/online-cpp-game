@@ -6,7 +6,7 @@ SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::playerInputEvent;
 
 std::unordered_map<int, Player*> players;
-GameObject* background = nullptr;
+GameObject* background;
 
 
 void Game::send(std::string message) {
@@ -114,25 +114,25 @@ void Game::input(SDL_Event& event) {
     if (!msg.empty()) {
         send(msg);
     }
-
-    for (auto& kv : players) {
-        kv.second->handleInput(msg);
-    }
 }
 
-void Game::update(float deltaTime) {
+void Game::update(float deltaTime,SDL_Event e) {
+    input(e);
+
 
     //local barrel rotations
     auto it = players.find(localplayerID);
     if (it != players.end() && it->second != nullptr) {
         it->second->rotateBarrel();
+        std::string msg;
+        msg = (std::to_string(it->second->barRot));
+        //send(msg);
     }
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-    SDL_RenderClear(renderer);
 
+    background->render(renderer);
     for (auto& kv : players) {
         kv.second->render(renderer);
     }
@@ -172,17 +172,12 @@ void Game::Close() {
 
 void Game::welcomeScreen() {
     background = new GameObject("assets/images/background.png",0,0,renderer);
-
-
+    background->setSize(800, 600);
     send("Game Welcome");
-    gameRunning = true;
 }
 
-void Game::sendPlayerPos() {
-    for (auto& p : players) {
-        float x, y, rot;
-        p.second->getPos(x, y, rot);
-    }
+void Game::sendPlayerData() {
+
 }
 
 void Game::GameLoop() {
@@ -190,5 +185,5 @@ void Game::GameLoop() {
 
 Game::Game() {
     startSDL();
-    welcomeScreen();
+    gameRunning = true;
 }
