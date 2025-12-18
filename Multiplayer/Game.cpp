@@ -90,7 +90,7 @@ void Game::input(SDL_Event& event) {
 
     SDL_Keycode key = event.key.keysym.sym;
     bool isDown = (event.type == SDL_KEYDOWN);
-    std::string msg;
+    std::string msg = "";
 
     if (keyDown[key] != isDown) {
         keyDown[key] = isDown;
@@ -106,28 +106,22 @@ void Game::input(SDL_Event& event) {
         }
     }
     int mouseXpos, mouseYpos;
+    float barRot = 0;
     SDL_GetMouseState(&mouseXpos, &mouseYpos);
     auto it = players.find(localplayerID);
     if (it != players.end() && it->second != nullptr) { // Checks to see if local player exists yet
         it->second->setMousePos(mouseXpos,mouseYpos);
+        it->second->rotateBarrel();
+        barRot = it->second->barRot;
     }
-    if (!msg.empty()) {
-        send(msg);
-    }
+    std::string rotation = std::to_string(barRot);
+    send(msg + ", " + rotation);
+    
 }
 
 void Game::update(float deltaTime,SDL_Event e) {
     input(e);
 
-
-    //local barrel rotations
-    auto it = players.find(localplayerID);
-    if (it != players.end() && it->second != nullptr) {
-        it->second->rotateBarrel();
-        std::string msg;
-        msg = (std::to_string(it->second->barRot));
-        //send(msg);
-    }
 }
 
 void Game::render() {

@@ -89,7 +89,20 @@ public class GameServer {
                     String[] parts = message.split(",");
 
                     PlayerManagement player = players.get(playerID);
+ 
+                    for (int i = 1; i < parts.length; i++) { 
+                        String action = parts[i].trim();
+                        if (!action.isEmpty()) {
+                            System.out.println("[Server] " + playerID + " sent: " + action);
+                            player.applyInput(action);
+                        }
+                    }
+                }
+                if(message.startsWith("PLAYER_DATA")){
+                    System.out.println(message);
+                    String[] parts = message.split(",");
 
+                    PlayerManagement player = players.get(playerID);
                     for (int i = 1; i < parts.length; i++) { 
                         String action = parts[i].trim();
                         if (!action.isEmpty()) {
