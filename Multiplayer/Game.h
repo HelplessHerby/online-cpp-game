@@ -42,3 +42,17 @@ public:
 	std::map<std::string, std::pair<int, int>> playerPositions;
 	std::map<SDL_Keycode, bool> keyDown;
 };
+
+struct PlayerInputState {
+	bool moveUp = false;
+	bool moveDown = false;
+	bool turnLeft = false;
+	bool turnRight = false;
+	bool shooting = false;
+
+	bool operator!=(const PlayerInputState& other) const {
+		return moveUp != other.moveUp || moveDown != other.moveDown ||
+			turnLeft != other.turnLeft || turnRight != other.turnRight ||
+			shooting != other.shooting;
+	}
+};

@@ -7,7 +7,9 @@ SDL_Event Game::playerInputEvent;
 
 std::unordered_map<int, Player*> players;
 GameObject* background;
-
+PlayerInputState localInput;
+PlayerInputState lastSentInput;
+float lastSentBarrelRot = 0.0f;
 
 void Game::send(std::string message) {
     if (!message.empty()) {
@@ -92,36 +94,54 @@ void Game::input(SDL_Event& event) {
     bool isDown = (event.type == SDL_KEYDOWN);
     std::string msg = "";
 
-    if (keyDown[key] != isDown) {
-        keyDown[key] = isDown;
-
-
-        switch (key) {
-        case SDLK_w: msg = isDown ? "MOVE_UP_DOWN" : "MOVE_UP_UP"; break;
-        case SDLK_s: msg = isDown ? "MOVE_DOWN_DOWN" : "MOVE_DOWN_UP"; break;
-        case SDLK_a: msg = isDown ? "TURN_LEFT_DOWN" : "TURN_LEFT_UP"; break;
-        case SDLK_d: msg = isDown ? "TURN_RIGHT_DOWN" : "TURN_RIGHT_UP"; break;
-        case SDLK_SPACE: msg = isDown ? "SHOOT_DOWN" : "SHOOT_UP"; break;
-
+    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+        bool down = (event.type == SDL_KEYDOWN);
+        switch (event.key.keysym.sym) {
+        case SDLK_w: localInput.moveUp = down; break;
+        case SDLK_s: localInput.moveDown = down; break;
+        case SDLK_a: localInput.turnLeft = down; break;
+        case SDLK_d: localInput.turnRight = down; break;
+        case SDLK_SPACE: localInput.shooting = down; break;
         }
     }
-    int mouseXpos, mouseYpos;
-    float barRot = 0;
-    SDL_GetMouseState(&mouseXpos, &mouseYpos);
     auto it = players.find(localplayerID);
-    if (it != players.end() && it->second != nullptr) { // Checks to see if local player exists yet
-        it->second->setMousePos(mouseXpos,mouseYpos);
+    if (it != players.end() && it->second != nullptr) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        it->second->setMousePos(mouseX, mouseY);
         it->second->rotateBarrel();
-        barRot = it->second->barRot;
     }
-    std::string rotation = std::to_string(barRot);
-    send(msg + ", " + rotation);
     
 }
 
 void Game::update(float deltaTime,SDL_Event e) {
     input(e);
 
+    auto it = players.find(localplayerID);
+    if (it == players.end() || it->second == nullptr) return;
+
+    float barrelRot = it->second->barRot;
+
+    // send if something has changed
+    if (localInput != lastSentInput || fabs(barrelRot - lastSentBarrelRot) > 0.01f) {
+        std::string msg = "";
+
+        // movement
+        msg += "," + std::to_string(localInput.moveUp ? 1 : 0);
+        msg += "," + std::to_string(localInput.moveDown ? 1 : 0);
+        msg += "," + std::to_string(localInput.turnLeft ? 1 : 0);
+        msg += "," + std::to_string(localInput.turnRight ? 1 : 0);
+        msg += "," + std::to_string(localInput.shooting ? 1 : 0);
+
+        // rotation
+        msg += "," + std::to_string(barrelRot);
+
+        send(msg);
+
+        //last sent state
+        lastSentInput = localInput;
+        lastSentBarrelRot = barrelRot;
+    }
 }
 
 void Game::render() {
