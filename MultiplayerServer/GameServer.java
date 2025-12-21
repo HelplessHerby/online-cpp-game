@@ -85,18 +85,42 @@ public class GameServer {
                 message = message.trim();
                 if(message.isEmpty()) continue;
 
-                if(message.startsWith("CLIENT_DATA")){
+                if (message.startsWith("CLIENT_DATA")) {
+
                     String[] parts = message.split(",");
 
-                    PlayerManagement player = players.get(playerID);
- 
-                    for (int i = 1; i < parts.length; i++) { 
-                        String action = parts[i].trim();
-                        if (!action.isEmpty()) {
-                            System.out.println("[Server] " + playerID + " sent: " + action);
-                            player.applyInput(action);
-                        }
+                    if (parts.length != 7) {
+                        System.out.println("[Server] Malformed CLIENT_DATA (" + parts.length + "): " + message);
+                        return;
                     }
+
+                    PlayerManagement player = players.get(playerID);
+                    if (player == null) return;
+
+                    boolean moveUp    = parts[1].trim().equals("1");
+                    boolean moveDown  = parts[2].trim().equals("1");
+                    boolean turnLeft  = parts[3].trim().equals("1");
+                    boolean turnRight = parts[4].trim().equals("1");
+                    boolean shooting  = parts[5].trim().equals("1");
+
+                    float barrelRot;
+                    try {
+                        barrelRot = Float.parseFloat(parts[6].trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("[Server] Invalid barrel rotation: " + parts[6]);
+                        return;
+                    }
+
+                    player.applyInput(
+                        moveUp,
+                        moveDown,
+                        turnLeft,
+                        turnRight,
+                        shooting,
+                        barrelRot
+                    );
+
+                    System.out.println("[Server] " + playerID + " input applied");
                 }
                 if(message.startsWith("exit")){
                     System.out.println("[Server]  " + playerID + " disconnected.");

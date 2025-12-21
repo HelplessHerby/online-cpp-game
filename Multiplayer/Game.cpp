@@ -13,14 +13,14 @@ float lastSentBarrelRot = 0.0f;
 
 void Game::send(std::string message) {
     if (!message.empty()) {
+        std::cout << message << "\n";
         message += "\n";
         messages.push_back(message);
     }
 }
 
 void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
-
-    if (cmd == "ASSIGN_ID") {
+        if (cmd == "ASSIGN_ID") {
 
         std::string localPlayerStr = args[0];
         size_t pos = localPlayerStr.find(":");
@@ -127,7 +127,7 @@ void Game::update(float deltaTime,SDL_Event e) {
         std::string msg = "";
 
         // movement
-        msg += "," + std::to_string(localInput.moveUp ? 1 : 0);
+        msg += std::to_string(localInput.moveUp ? 1 : 0);
         msg += "," + std::to_string(localInput.moveDown ? 1 : 0);
         msg += "," + std::to_string(localInput.turnLeft ? 1 : 0);
         msg += "," + std::to_string(localInput.turnRight ? 1 : 0);
@@ -165,7 +165,7 @@ void Game::startSDL() {
         
         renderer = SDL_CreateRenderer(gameWindow, -1, 0);
         gameRunning = true;
-        send("Game Created");
+        //send("Game Created");
     }
     else {
         gameRunning = false;
@@ -187,7 +187,7 @@ void Game::Close() {
 void Game::welcomeScreen() {
     background = new GameObject("assets/images/background.png",0,0,renderer);
     background->setSize(800, 600);
-    send("Game Welcome");
+    //send("Game Welcome");
 }
 
 void Game::sendPlayerData() {

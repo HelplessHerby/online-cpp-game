@@ -17,22 +17,21 @@ public class PlayerManagement{
     float maxSpeed = 5f;
 	float drag = 0.9f;
 
-    public void applyInput(String act){
-        switch(act){
-            case "MOVE_UP_DOWN": up = true; break;
-            case "MOVE_UP_UP": up = false; break;
-
-            case "MOVE_DOWN_DOWN": down = true; break;
-            case "MOVE_DOWN_UP": down = false; break;
-
-            case "TURN_LEFT_DOWN": left = true; break;
-            case "TURN_LEFT_UP": left = false; break;
-
-            case "TURN_RIGHT_DOWN": right = true; break;
-            case "TURN_RIGHT_UP": right = false; break;
-
-        }
+    public void applyInput(
+        boolean moveUp, 
+        boolean moveDown, 
+        boolean turnLeft,
+        boolean turnRight,
+        boolean shooting, 
+        float barrelRot)
+    {
+        this.up = moveUp;
+        this.down = moveDown;
+        this.left = turnLeft;
+        this.right = turnRight;
+        this.barrelRot = barrelRot;
     }
+    
 
     public void movement(){
             double rad = rot * (3.14 / 180.0f);
