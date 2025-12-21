@@ -38,7 +38,6 @@ public:
 	void Close();
 	static SDL_Renderer* renderer;
 	static SDL_Event playerInputEvent;
-	void sendPlayerData();
 	std::map<std::string, std::pair<int, int>> playerPositions;
 	std::map<SDL_Keycode, bool> keyDown;
 };

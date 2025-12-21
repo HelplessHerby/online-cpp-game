@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 	const int frameDelay = 1000 / FPS;
 	Uint64 frameStart;
 	int deltaTime = 20;
-
+	bool openSockets = false;
 	game = new Game;
 
 	is_running = game->isRunning();
@@ -105,7 +105,6 @@ int main(int argc, char** argv) {
 
 	// Handle Game Behaviour
 
-	game->welcomeScreen();
 	while (game->isRunning()) {
 		frameStart = SDL_GetTicks64();
 		
@@ -124,6 +123,8 @@ int main(int argc, char** argv) {
 		deltaTime = SDL_GetTicks64() - frameStart;
 		if (frameDelay > deltaTime) SDL_Delay(frameDelay - deltaTime);
 	}
+
+
 
 	SDL_WaitThread(recvThread, nullptr);
 	SDL_WaitThread(sendThread, nullptr);

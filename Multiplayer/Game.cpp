@@ -190,14 +190,12 @@ void Game::welcomeScreen() {
     //send("Game Welcome");
 }
 
-void Game::sendPlayerData() {
-
-}
 
 void Game::GameLoop() {
 }
 
 Game::Game() {
     startSDL();
+    welcomeScreen();
     gameRunning = true;
 }
