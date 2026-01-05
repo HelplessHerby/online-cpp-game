@@ -37,6 +37,7 @@ public:
 	void rotateBarrel();
 	void render(SDL_Renderer* renderer);
 	void setMousePos(int mouseXPos, int mouseYPos);
+	void setBarRot(float newBarRot);
 	SDL_Point barPivot = {
 		32 / 2,
 		32 - 15

@@ -90,8 +90,7 @@ public class GameServer {
                     String[] parts = message.split(",");
 
                     if (parts.length != 7) {
-                        System.out.println("[Server] Malformed CLIENT_DATA (" + parts.length + "): " + message);
-                        return;
+                        System.out.println("[Server] Wrong CLIENT_DATA (" + parts.length + "): " + message);
                     }
 
                     PlayerManagement player = players.get(playerID);

@@ -20,33 +20,37 @@ void Game::send(std::string message) {
 }
 
 void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
-        if (cmd == "ASSIGN_ID") {
+    if (cmd == "ASSIGN_ID") {
+        if (args.empty()) return;
 
         std::string localPlayerStr = args[0];
         size_t pos = localPlayerStr.find(":");
         if (pos == std::string::npos) {
-            std::cerr << "[Client] ERROR: ASSIGN_ID missing colon: "
-                << localPlayerStr << std::endl;
+            std::cerr << "[CLIENT] ERROR: ASSIGN_ID missing colon: "
+            << localPlayerStr << std::endl;
             return;
         }
-
         localplayerID = std::stoi(localPlayerStr.substr(pos + 1));
-        std::cout << "[Client] Assigned Player ID: " << localplayerID << std::endl;
+        std::cout << "[CLIENT] Assigned Player ID: " << localplayerID << std::endl;
 
+            //Spawn Local player
         if (players.find(localplayerID) == players.end()) {
-            players[localplayerID] = new Player("assets/images/testPlayer.png", localplayerID,
-                200 * localplayerID, // x pos
-                200 * localplayerID, // y pos
-                renderer);
+                players[localplayerID] = new Player(
+                "assets/images/testPlayer.png",
+                localplayerID,
+                200, 200,
+                renderer
+            );
         }
+        return;
     }
 
     else if (cmd == "GAME_DATA") {
+        std::unordered_set<int> serverIDs;
 
-        std::unordered_set<int> serverIds;
 
-        for (size_t i = 0; i + 3 < args.size(); i += 4) {
-
+        //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation
+        for (size_t i = 0; i + 3 < args.size(); i += 5) {
             std::string idStr = args[i];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
@@ -55,25 +59,30 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             float x = std::stof(args[i + 1]);
             float y = std::stof(args[i + 2]);
             float rot = std::stof(args[i + 3]);
+            float barRot = std::stof(args[i + 4]);
 
-            serverIds.insert(playerID);
+            serverIDs.insert(playerID);
 
+            //Creates Player incase doesn't exist
             if (players.find(playerID) == players.end()) {
-                players[playerID] = new Player("assets/images/testPlayer.png",playerID, x, y, renderer);
+                players[playerID] = new Player("assets/images/testPlayer.png",
+                    playerID, (int)x,(int) y, renderer);
             }
-
+            //Update Player
             players[playerID]->setPos(x, y, rot);
+            players[playerID]->setBarRot(barRot);
+            //Console Output
+            std::cout << "id: " << playerID 
+                << " x: " << x 
+                << " y: " << y 
+                << " rot: " << rot 
+                << " bar rot: " << barRot
+                << std::endl;
 
-            std::cout << "id: " << playerID
-                << " x: " << x
-                << " y: " << y
-                << " rot: " << rot << std::endl;
 
-            playerPositions[idStr] = { x, y };
         }
-
-        for (auto it = players.begin(); it != players.end(); ) {
-            if (serverIds.find(it->first) == serverIds.end()) {
+        for (auto it = players.begin(); it != players.end();) {
+            if (serverIDs.find(it->first) == serverIDs.end()) {
                 delete it->second;
                 it = players.erase(it);
             }
@@ -81,10 +90,10 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
                 ++it;
             }
         }
+        return;
     }
-
     else {
-        std::cout << "Received: " << cmd << std::endl;
+        //std::cout << "Received: " << cmd << std::endl;
     }
 }
 

@@ -2,6 +2,8 @@
 #include "SDL.h"
 #include "SDL_net.h"
 #include "Game.h"
+#include <mutex>
+#include "NetworkHandler.h"
 
 
 const char* IP_NAME = "localhost";
@@ -44,7 +46,8 @@ static int on_receive(void* socket_ptr) {
 			}
 		}
 
-		game->on_receive(cmd, args);
+		std::lock_guard<std::mutex> lock(netMutex);
+		netQueue.push({ cmd, args });
 		std::cout << "Received: " << cmd << std::endl;
 
 		if (cmd == "exit") {
@@ -107,21 +110,39 @@ int main(int argc, char** argv) {
 
 	while (game->isRunning()) {
 		frameStart = SDL_GetTicks64();
-		
-		game->render();
 
+		//HANDLE NETWORK QUEUE
+		std::vector<NetMessage> pending;
+		{
+			std::lock_guard<std::mutex> lock(netMutex);
+			while (!netQueue.empty()) {
+				pending.push_back(netQueue.front());
+				netQueue.pop();
+			}
+		}
+
+		for (auto& msg : pending) {
+			game->on_receive(msg.cmd, msg.args);
+		}
+
+		//SDL EVENTS
 		SDL_Event e;
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				game->Close();
 				is_running = false;
-			}			
+			}
 			game->update(deltaTime, e);
-
 		}
-		//Limit FPS
+
+		//RENDER
+		game->render();
+
+		//FRAME CAP
 		deltaTime = SDL_GetTicks64() - frameStart;
-		if (frameDelay > deltaTime) SDL_Delay(frameDelay - deltaTime);
+		if (frameDelay > deltaTime) {
+			SDL_Delay(frameDelay - deltaTime);
+		}
 	}
 
 

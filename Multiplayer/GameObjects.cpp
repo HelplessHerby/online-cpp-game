@@ -91,3 +91,6 @@ void Player::rotateBarrel(){
 	barRot = angleDeg;
 	barRot += 90;
 }
+void Player::setBarRot(float newBarRot) {
+	barRot = newBarRot;
+}

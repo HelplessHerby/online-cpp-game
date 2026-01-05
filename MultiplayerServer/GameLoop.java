@@ -41,7 +41,7 @@ public class GameLoop implements Runnable{
                 .append(",").append((int)p.x)
                 .append(",").append((int)p.y)
                 .append(",").append((int)p.rot)
-                .append(",").append(p.barrelRot);
+                .append(",").append((int)p.barrelRot);
         }
         String msg = data.toString();
 
