@@ -35,14 +35,27 @@ public class GameLoop implements Runnable{
 
                 p.movement(); 
 
-                if(!level.isWalkable(p.nextX, p.nextY)){
-                    p.dontMove();
-                }else{
+                if(level.isWalkable(p.nextX, p.nextY)){
+                    System.out.println("aaaaa");
                     p.doMove();
+                }else{
+                    p.dontMove();
                 }
-
-
             }
+
+            //LevelManagement
+            for(Socket s : socketIDMap.keySet()){
+                if(!levelSent.contains(s)){
+                    try{
+                        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                        out.println(level.serialiseLevel());
+                        levelSent.add(s);
+                    }catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+
 
             sendGameData();
 

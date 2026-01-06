@@ -37,7 +37,8 @@ public class levelSystem{
                 sb.append(",").append(tiles[x][y].type);
             }
         }
-        sb.append(",LEVEL_END");
+        sb.append(",LEVEL_END ");
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -60,15 +61,26 @@ public class levelSystem{
                 rows.add(row);
             }
         }
+        if(rows.isEmpty()){
+            throw new IOException("CSV IS EMPTY: " + path);
+        }
+
         int height = rows.size();
         int width = rows.get(0).length;
 
+
+        //Init
         levelSystem level = new levelSystem();
         level.levelID = levelID;
+        level.width = width;
+        level.height = height;
+        level.tiles = new Tile[width][height];
+
+
 
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                level.tiles[y][x] = new Tile(rows.get(y)[x]);
+                level.tiles[x][y] = new Tile(rows.get(y)[x]);
             }
         }
         return level;

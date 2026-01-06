@@ -6,6 +6,7 @@
 
 class GameObject {
 public:
+	GameObject();
 	GameObject(const char* textureName , float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 
 	void setPos(float setX, float setY, float setRot);
@@ -67,4 +68,10 @@ public:
 
 private:
 
+};
+class Tile : public GameObject {
+public:
+	Tile(const char* textureName, float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
+	enum Type { EMPTY, SOLID, BREAKABLE, HOLE, PSPAWN };
+	Type type;
 };

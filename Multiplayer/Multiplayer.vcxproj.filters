@@ -27,7 +27,7 @@
     <ClCompile Include="NetworkHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LevelSystem.cpp">
+    <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="NetworkHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LevelSystem.h">
+    <ClInclude Include="Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

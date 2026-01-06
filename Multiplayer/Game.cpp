@@ -10,6 +10,8 @@ GameObject* background;
 PlayerInputState localInput;
 PlayerInputState lastSentInput;
 float lastSentBarrelRot = 0.0f;
+Level* curLevel;
+
 
 void Game::send(std::string message) {
     if (!message.empty()) {
@@ -44,7 +46,12 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         }
         return;
     }
-
+    else if (cmd == "LEVEL_LOAD") {
+        curLevel->levelMessage(args);
+        std::cout << "[CLIENT] loaded level ID: " << curLevel->levelID
+            << " Width: " << curLevel->width
+            << " Height: " << curLevel->height << std::endl;
+    }
     else if (cmd == "GAME_DATA") {
         std::unordered_set<int> serverIDs;
 
@@ -93,6 +100,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         }
         return;
     }
+
     else {
         //std::cout << "Received: " << cmd << std::endl;
     }
@@ -207,5 +215,6 @@ void Game::GameLoop() {
 Game::Game() {
     startSDL();
     welcomeScreen();
+    curLevel = new Level();
     gameRunning = true;
 }

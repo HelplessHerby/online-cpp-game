@@ -1,5 +1,8 @@
 #include "GameObjects.h"
 
+GameObject::GameObject() {
+
+}
 
 GameObject::GameObject(const char* textureName, float x, float y, SDL_Renderer* renderer) : x(x), y(y), rot(0.0f) {
 	SDL_Surface* objectSur = IMG_Load(textureName);
@@ -93,4 +96,14 @@ void Player::rotateBarrel(){
 }
 void Player::setBarRot(float newBarRot) {
 	barRot = newBarRot;
+}
+
+Tile::Tile(const char* textureName, float x, float y, SDL_Renderer* renderer) {
+	SDL_Surface* objectSur = IMG_Load(textureName);
+	spriteTexture = SDL_CreateTextureFromSurface(renderer, objectSur);
+
+	SDL_FreeSurface(objectSur);
+
+	srcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
+	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
 }

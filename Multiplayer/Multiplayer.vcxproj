@@ -133,14 +133,14 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObjects.cpp" />
-    <ClCompile Include="LevelSystem.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObjects.h" />
-    <ClInclude Include="LevelSystem.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="NetworkHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -17,7 +17,7 @@ public class PlayerManagement{
     public float rotationSpeed = 360f;
     public float barrelRot = 0;
     float acceleration = 0.5f;
-    float maxSpeed = 5f;
+    float maxSpeed = 10f;
 	float drag = 0.9f;
 
     public void applyInput(
@@ -58,13 +58,13 @@ public class PlayerManagement{
         if (Math.abs(yVel) > 0.1f) yVel *= drag; else yVel = 0;
 
 
-        nextX = x += xVel;
-        nextY = y += yVel;
+        nextX = x + xVel;
+        nextY = y + yVel;
     }
 
     public void doMove(){
-        x = nextX;
-        y = nextY;
+        x = x += xVel;
+        y = y += yVel;
     }
 
     public void dontMove(){
