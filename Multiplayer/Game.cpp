@@ -81,6 +81,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
 
 
         }
+        //deletes players
         for (auto it = players.begin(); it != players.end();) {
             if (serverIDs.find(it->first) == serverIDs.end()) {
                 delete it->second;

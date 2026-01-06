@@ -1,28 +1,47 @@
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class GameLoop implements Runnable{
     private Map<String,PlayerManagement> playersMap;
     private Map<Socket, String> socketIDMap;
 
+    private final levelSystem level;
+    private final Set<Socket> levelSent = new HashSet<>();
+
     public GameLoop(Map<String,PlayerManagement> players, Map<Socket, String> socketID){
         this.playersMap=players;
         this.socketIDMap=socketID;
+        levelSystem tempLevel = null;
+        try{
+            tempLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
+        }catch(IOException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        this.level = tempLevel;
     }
 
     @Override
     public void run(){
-
-
-        while(true){
-
+        while(true){                    
             //PlayerMovement
-
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
 
-                p.movement();    	                   
+                p.movement(); 
+
+                if(!level.isWalkable(p.nextX, p.nextY)){
+                    p.dontMove();
+                }else{
+                    p.doMove();
+                }
+
+
             }
 
             sendGameData();

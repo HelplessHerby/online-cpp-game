@@ -2,6 +2,9 @@ public class PlayerManagement{
     public float x = 200;
     public float y = 200;
 
+    public float nextX;
+    public float nextY;
+
     public float xVel = 0;
     public float yVel = 0;
 
@@ -34,29 +37,40 @@ public class PlayerManagement{
     
 
     public void movement(){
-            double rad = rot * (3.14 / 180.0f);
-            if (left) rot -= rotationSpeed * 0.01f;
-            if (right) rot += rotationSpeed * 0.01f;
-            if (up) {
-                xVel += Math.sin(rad) * acceleration ;
-                yVel -= Math.cos(rad) * acceleration ;
-            }
-            if (down) {
-                xVel -= Math.sin(rad) * acceleration;
-                yVel += Math.cos(rad) * acceleration;
-            }
+        double rad = rot * (3.14 / 180.0f);
+        if (left) rot -= rotationSpeed * 0.01f;
+        if (right) rot += rotationSpeed * 0.01f;
+        if (up) {
+            xVel += Math.sin(rad) * acceleration ;
+            yVel -= Math.cos(rad) * acceleration ;
+        }
+        if (down) {
+            xVel -= Math.sin(rad) * acceleration;
+            yVel += Math.cos(rad) * acceleration;
+        }
 
-            if (xVel > maxSpeed) xVel = maxSpeed;
-            if (yVel > maxSpeed) yVel = maxSpeed;
-            if (xVel < -maxSpeed) xVel = -maxSpeed;
-            if (yVel < -maxSpeed) yVel = -maxSpeed;
+        if (xVel > maxSpeed) xVel = maxSpeed;
+        if (yVel > maxSpeed) yVel = maxSpeed;
+        if (xVel < -maxSpeed) xVel = -maxSpeed;
+        if (yVel < -maxSpeed) yVel = -maxSpeed;
 
-            if (Math.abs(xVel) > 0.1f) xVel *= drag; else xVel = 0;
-            if (Math.abs(yVel) > 0.1f) yVel *= drag; else yVel = 0;
+        if (Math.abs(xVel) > 0.1f) xVel *= drag; else xVel = 0;
+        if (Math.abs(yVel) > 0.1f) yVel *= drag; else yVel = 0;
 
 
-            x += xVel;
-            y += yVel;
+        nextX = x += xVel;
+        nextY = y += yVel;
     }
 
+    public void doMove(){
+        x = nextX;
+        y = nextY;
+    }
+
+    public void dontMove(){
+        nextX = x;
+        nextY = y;
+        xVel = 0;
+        yVel = 0;
+    }
 }
