@@ -36,9 +36,22 @@ void Level::levelMessage(const std::vector<std::string>& args) {
 		this->posY = y * 32.0f;
 		std::cout << std::stoi(arg);
 		if (std::stoi(arg) == 1) {
-			tiles.push_back(new Tile("assets/images/cork.png", posX, posY, Game::renderer));
+			randInt = rand() % 2;
+			if (randInt == 1) {
+				tiles.push_back(new Tile("assets/images/cork.png", posX, posY, Game::renderer));
+			}
+			else {
+				tiles.push_back(new Tile("assets/images/wood.png", posX, posY, Game::renderer));
+
+			}
 		}
 		x++;
 	}
 }
-
+void Level::renderTiles(SDL_Renderer* renderer) {
+	for (Tile* tile : tiles) {
+		if (tile) {
+			tile->render(renderer);
+		}
+	}
+}

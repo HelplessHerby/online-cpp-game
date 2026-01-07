@@ -17,6 +17,7 @@ public class GameLoop implements Runnable{
         this.socketIDMap=socketID;
         levelSystem tempLevel = null;
         try{
+            //load first level
             tempLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
         }catch(IOException e){
             e.printStackTrace();
@@ -32,15 +33,8 @@ public class GameLoop implements Runnable{
             //PlayerMovement
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
-
-                p.movement(); 
-
-                if(level.isWalkable(p.nextX, p.nextY)){
-                    System.out.println("aaaaa");
-                    p.doMove();
-                }else{
-                    p.dontMove();
-                }
+                p.movement();
+                p.doMove(level);
             }
 
             //LevelManagement

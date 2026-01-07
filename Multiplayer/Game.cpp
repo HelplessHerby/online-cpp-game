@@ -168,7 +168,7 @@ void Game::render() {
     for (auto& kv : players) {
         kv.second->render(renderer);
     }
-
+    curLevel->renderTiles(renderer);
     SDL_RenderPresent(renderer);
 }
 

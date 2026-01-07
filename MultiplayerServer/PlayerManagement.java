@@ -1,6 +1,9 @@
 public class PlayerManagement{
-    public float x = 200;
-    public float y = 200;
+    public float x = 10;
+    public float y = 10;
+
+    public float width = 0.5f;
+    public float height = 0.5f;
 
     public float nextX;
     public float nextY;
@@ -62,9 +65,24 @@ public class PlayerManagement{
         nextY = y + yVel;
     }
 
-    public void doMove(){
-        x = x += xVel;
-        y = y += yVel;
+    public void doMove(levelSystem level) {
+
+        // X axis first
+        float newX = x + xVel;
+        if (!collides(level, newX, y)) {
+            x = newX;
+        } else {
+            xVel = 0;
+        }
+
+        // Y axis second
+        float newY = y + yVel;
+        if (!collides(level, x, newY)) {
+            y = newY;
+        } else {
+            yVel = 0;
+        }
+
     }
 
     public void dontMove(){
@@ -72,5 +90,22 @@ public class PlayerManagement{
         nextY = y;
         xVel = 0;
         yVel = 0;
+        
+    }
+
+    private boolean collides(levelSystem level, float px, float py) {
+    float left   = px;
+    float right  = px + width;
+    float top    = py;
+    float bottom = py + height;
+
+    return level.isSolid(left,  top)    ||
+           level.isSolid(right, top)    ||
+           level.isSolid(left,  bottom) ||
+           level.isSolid(right, bottom);
+    }
+    public void Spawn(int x, int y){
+        this.x = x + 0.5f;
+        this.y = y + 0.5f;
     }
 }

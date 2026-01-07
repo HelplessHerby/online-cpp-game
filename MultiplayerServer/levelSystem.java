@@ -113,7 +113,7 @@ public class levelSystem{
     //Collisions
     public boolean isWalkable(float x, float y){
         Tile tile = getTileFromWorld(x,y);
-        if(tile == null) return false;
+        if(tile == null) return true;
 
         return tile.isWalkable();
     }
@@ -139,16 +139,22 @@ public class levelSystem{
     }
 
     //Tile Logic
-    private Tile getTileFromWorld(float x, float y){
-        int tx = (int) x;
-        int ty = (int) y;
-        if(!inBounds(tx,ty)) return null;
-        return tiles[tx][ty];
+    private Tile getTileFromWorld(float wx, float wy) {
+        int tx = (int) Math.floor(wx);
+        int ty = (int) Math.floor(wy);
+        return getTile(tx, ty);
     }
 
     private boolean inBounds(int x, int y){
         return x>=0 && y>=0 && x < width && y < height;
     }
+
+    private Tile getTile(int tx, int ty) {
+    if (tx < 0 || ty < 0 || tx >= width || ty >= height) {
+        return null;
+    }
+    return tiles[tx][ty];
+}
 
     //Spawn Logic
     public SpawnPoint getSpawnPoint(int index){
