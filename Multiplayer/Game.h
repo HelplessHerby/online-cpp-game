@@ -33,7 +33,6 @@ public:
 	void on_receive(std::string message, std::vector<std::string>& args);
 	void update(float deltaTime, SDL_Event e);
 	void welcomeScreen( );
-	void GameLoop();
 	void render();
 	bool isRunning()  const { return gameRunning; }
 	void Close();

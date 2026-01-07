@@ -21,6 +21,7 @@ public class GameLoop implements Runnable{
     gameState gs;
     levelSystem curLevel = null;
     int levelIndex = 1;
+    boolean isShooting = false;
     public GameLoop(Map<String,PlayerManagement> players, Map<Socket, String> socketID){
         this.playersMap=players;
         this.socketIDMap=socketID;
@@ -49,7 +50,12 @@ public class GameLoop implements Runnable{
                     gs = gameState.DURING_LEVEL;
                     break;
                 case DURING_LEVEL:
-                    gs = gameState.END_LEVEL;
+                    for(String id:playersMap.keySet()){
+                        PlayerManagement p = playersMap.get(id);
+                        if(p.isAlive == 0){
+                             gs = gameState.END_LEVEL;
+                        }
+                    }
                     break;
                 case END_LEVEL:
 
@@ -60,8 +66,29 @@ public class GameLoop implements Runnable{
 
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
-                p.movement();
-                p.doMove(level);
+                isShooting = p.Shoot();
+                if(!isShooting){
+                    p.movement();
+                    p.doMove(level);
+                }else{
+                    System.out.println("Shooting");
+                    StringBuilder data = new StringBuilder("SHOOTING");
+                    data.append(",").append(id)
+                        .append(",").append((int)p.x + 16)
+                        .append(",").append((int)p.y);
+                    
+                    String msg = data.toString();
+                    System.out.println(msg);
+
+                    for (Socket s : socketIDMap.keySet()){
+                        try{
+                            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                            out.println(msg);
+                        } catch(Exception ignored){}
+                    }
+                }
+
+                
             }
 
             //LevelManagement
@@ -97,24 +124,30 @@ public class GameLoop implements Runnable{
         }
     }
     private void sendGameData(){
-        StringBuilder data = new StringBuilder("GAME_DATA");
+        if(!isShooting){
+            StringBuilder data = new StringBuilder("GAME_DATA");
 
-        for(String id : playersMap.keySet()) {
-            PlayerManagement p = playersMap.get(id);
-            data.append(",").append(id)
-                .append(",").append((int)p.x)
-                .append(",").append((int)p.y)
-                .append(",").append((int)p.rot)
-                .append(",").append((int)p.barrelRot)
-                .append(",").append((int)p.isAlive);
-        }
-        String msg = data.toString();
+            for(String id : playersMap.keySet()) {
+                PlayerManagement p = playersMap.get(id);
+                data.append(",").append(id)
+                    .append(",").append((int)p.x)
+                    .append(",").append((int)p.y)
+                    .append(",").append((int)p.rot)
+                    .append(",").append((int)p.barrelRot)
+                    .append(",").append((int)p.isAlive);
+            }
+            String msg = data.toString();
 
-        for (Socket s : socketIDMap.keySet()){
-            try{
-                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-                out.println(msg);
-            } catch(Exception ignored){}
+            for (Socket s : socketIDMap.keySet()){
+                try{
+                    PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                    out.println(msg);
+                } catch(Exception ignored){}
+            }
+        }else
+        {
+
         }
+
     }
 }

@@ -6,6 +6,7 @@ SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::playerInputEvent;
 
 std::unordered_map<int, Player*> players;
+Bullet* bullets[10] = {};
 GameObject* background;
 PlayerInputState localInput;
 PlayerInputState lastSentInput;
@@ -54,8 +55,6 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
     }
     else if (cmd == "GAME_DATA") {
         std::unordered_set<int> serverIDs;
-
-
         //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation, Alive status
         for (size_t i = 0; i + 3 < args.size(); i += 6) {
             std::string idStr = args[i];
@@ -107,7 +106,20 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         }
         return;
     }
+    if (cmd == "SHOOTING") {
+        for (size_t i = 0; i + 3 < args.size(); i += 4) {
+            std::string idStr = args[i];
+            size_t pos = idStr.find(":");
+            if (pos == std::string::npos) continue;
 
+            int playerID = std::stoi(idStr.substr(pos + 1));
+            float x = std::stof(args[i+1]);
+            float y = std::stof(args[i+2]);
+            std::cout<< "ID: "<< playerID << " x: " << x << " y: " << y;
+            bullets[0] = new Bullet("assets / images / bullet.png", x, y, renderer);
+        }
+
+    }
     else {
         //std::cout << "Received: " << cmd << std::endl;
     }
@@ -177,6 +189,9 @@ void Game::render() {
     for (auto& kv : players) {
         kv.second->render(renderer);
     }
+    for (Bullet* bullet : bullets) {
+        bullet->render(renderer);
+    }
     curLevel->renderTiles(renderer);
     SDL_RenderPresent(renderer);
 }
@@ -215,10 +230,6 @@ void Game::welcomeScreen() {
     background = new GameObject("assets/images/background.png",0,0,renderer);
     background->setSize(800, 600);
     //send("Game Welcome");
-}
-
-
-void Game::GameLoop() {
 }
 
 Game::Game() {

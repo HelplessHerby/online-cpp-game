@@ -16,6 +16,7 @@ public class PlayerManagement{
     public boolean right = false;
 
     public int isAlive = 1;
+    public boolean shooting;
     public float rot = 0;
     public float rotationSpeed = 360f;
     public float barrelRot = 0;
@@ -36,6 +37,7 @@ public class PlayerManagement{
         this.left = turnLeft;
         this.right = turnRight;
         this.barrelRot = barrelRot;
+        this.shooting = shooting;
     }
     
     public void spawnPlayer(float spawnX, float spawnY){
@@ -66,6 +68,13 @@ public class PlayerManagement{
 
         nextX = x + xVel;
         nextY = y + yVel;
+    }
+
+    public boolean Shoot(){
+        if(shooting){
+            
+            return true;
+        }else{return false;}
     }
 
     public void doMove(levelSystem level) {

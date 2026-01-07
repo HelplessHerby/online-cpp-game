@@ -67,7 +67,8 @@ private:
 };
 class Bullet : public GameObject {
 public:
-	Bullet(float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
+	Bullet(const char* textureName,float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
+	void render(SDL_Renderer* renderer);
 
 private:
 

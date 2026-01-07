@@ -105,6 +105,18 @@ void Player::setAlive(float Alive) {
 		isAlive = false;
 	}
 }
+Bullet::Bullet(const char* textureName, float x, float y, SDL_Renderer* renderer) {
+	SDL_Surface* objectSur = IMG_Load(textureName);
+	spriteTexture = SDL_CreateTextureFromSurface(renderer, objectSur);
+
+	SDL_FreeSurface(objectSur);
+
+	srcRect = { 0,0,SPRITE_SIZE,SPRITE_SIZE };
+	destRect = { (int)x, (int)y,SPRITE_SCREEN_SIZE,SPRITE_SCREEN_SIZE };
+}
+void Bullet::render(SDL_Renderer* renderer) {
+	SDL_RenderCopyEx(renderer, spriteTexture, &srcRect, &destRect, rot, nullptr, SDL_FLIP_NONE);
+}
 Tile::Tile(const char* textureName, float x, float y, SDL_Renderer* renderer) {
 	SDL_Surface* objectSur = IMG_Load(textureName);
 	spriteTexture = SDL_CreateTextureFromSurface(renderer, objectSur);
