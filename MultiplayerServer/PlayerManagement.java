@@ -1,9 +1,8 @@
 public class PlayerManagement{
-    public float x = 10;
-    public float y = 10;
-
-    public float width = 0.5f;
-    public float height = 0.5f;
+    public float x = 50;
+    public float y = 50;
+    public float width = 32f;
+    public float height = 32f;
 
     public float nextX;
     public float nextY;

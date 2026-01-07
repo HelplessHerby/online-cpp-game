@@ -10,6 +10,7 @@ public class levelSystem{
     public static final int TILE_BREAKABLE = 2;
     public static final int TILE_HOLE = 3;
     public static final int TILE_SPAWN = 4;
+    public static final int SPRITE_SIZE = 32;
 
     private int levelID;
     private int width;
@@ -34,7 +35,7 @@ public class levelSystem{
         for(int y = 0; y < height; y++){
             sb.append(",ROW");
             for(int x = 0; x < width; x++){
-                sb.append(",").append(tiles[x][y].type);
+                sb.append(",").append(tiles[y][x].type);
             }
         }
         sb.append(",LEVEL_END ");
@@ -74,13 +75,13 @@ public class levelSystem{
         level.levelID = levelID;
         level.width = width;
         level.height = height;
-        level.tiles = new Tile[width][height];
+        level.tiles = new Tile[height][width];
 
 
 
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                level.tiles[x][y] = new Tile(rows.get(y)[x]);
+                level.tiles[y][x] = new Tile(rows.get(y)[x]);
             }
         }
         return level;
@@ -88,22 +89,23 @@ public class levelSystem{
     //Load Level
     public void loadLevel(int id, int[][] tileMap){
         this.levelID = id;
-        this.width = tileMap.length;
-        this.height = tileMap[0].length;
+        this.width = tileMap[0].length;
+        this.height = tileMap.length;
 
-        tiles = new Tile[width][height];
+        tiles = new Tile[height][width];
         tileChanges.clear();
         spawnPoints.clear();
 
-        for(int x = 0; x < width; x++){
-            for(int y = 0; y < height; y++){
-                int type = tileMap[x][y];
-                tiles[x][y] = new Tile(type);
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                int type = tileMap[y][x];
+                tiles[y][x] = new Tile(type);
                 if(type == TILE_SPAWN){
-                    spawnPoints.add(new SpawnPoint(x,y));
+                    spawnPoints.add(new SpawnPoint(x, y));
                 }
             }
         }
+
     }
 
     public int getLevelId(){
@@ -119,19 +121,19 @@ public class levelSystem{
     }
     public boolean isSolid(float x,float y){
         Tile tile = getTileFromWorld(x,y);
-        if(tile == null) return true;
+        if(tile == null) return false;
 
         return tile.isSolid();
     }
 
     //Bullet Logic
     public void handleBulletHit(float x,float y){
-        int tx = (int) x;
-        int ty = (int) y;
+        int tx = (int)Math.floor(x / SPRITE_SIZE);
+        int ty = (int)Math.floor(y / SPRITE_SIZE);
 
-        if(!inBounds(tx,ty)) return;
+        if(!inBounds(ty,tx)) return;
 
-        Tile tile = tiles[tx][ty];
+        Tile tile = tiles[ty][tx];
         if(tile.type == TILE_BREAKABLE){
             tile.type = TILE_EMPTY;
             tileChanges.add(new TileChange(tx,ty,TILE_EMPTY));
@@ -140,8 +142,8 @@ public class levelSystem{
 
     //Tile Logic
     private Tile getTileFromWorld(float wx, float wy) {
-        int tx = (int) Math.floor(wx);
-        int ty = (int) Math.floor(wy);
+        int tx = (int)Math.floor(wx /SPRITE_SIZE);
+        int ty = (int)Math.floor(wy / SPRITE_SIZE);
         return getTile(tx, ty);
     }
 
@@ -153,7 +155,7 @@ public class levelSystem{
     if (tx < 0 || ty < 0 || tx >= width || ty >= height) {
         return null;
     }
-    return tiles[tx][ty];
+    return tiles[ty][tx];
 }
 
     //Spawn Logic
