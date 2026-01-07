@@ -39,11 +39,14 @@ public:
 	void render(SDL_Renderer* renderer);
 	void setMousePos(int mouseXPos, int mouseYPos);
 	void setBarRot(float newBarRot);
+	void setAlive(float alive);
+	bool getAlive() { return isAlive; }
 	SDL_Point barPivot = {
 		32 / 2,
 		32 - 15
 	};
 	float barRot;
+	bool isAlive = true;
 private:
 	int playerId;
 

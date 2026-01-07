@@ -11,7 +11,7 @@ PlayerInputState localInput;
 PlayerInputState lastSentInput;
 float lastSentBarrelRot = 0.0f;
 Level* curLevel;
-
+bool isLocalAlive = true;
 
 void Game::send(std::string message) {
     if (!message.empty()) {
@@ -56,8 +56,8 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         std::unordered_set<int> serverIDs;
 
 
-        //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation
-        for (size_t i = 0; i + 3 < args.size(); i += 5) {
+        //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation, Alive status
+        for (size_t i = 0; i + 3 < args.size(); i += 6) {
             std::string idStr = args[i];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
@@ -67,7 +67,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             float y = std::stof(args[i + 2]);
             float rot = std::stof(args[i + 3]);
             float barRot = std::stof(args[i + 4]);
-
+            float isAlive = std::stof(args[i + 5]);
             serverIDs.insert(playerID);
 
             //Creates Player incase doesn't exist
@@ -78,12 +78,19 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             //Update Player
             players[playerID]->setPos(x, y, rot);
             players[playerID]->setBarRot(barRot);
+            players[playerID]->setAlive(isAlive);
+            //PlayerAlive
+            if (isAlive == 1) {
+                isLocalAlive = true;
+            }
+            else { isLocalAlive = false; }
             //Console Output
-            std::cout << "id: " << playerID 
-                << " x: " << x 
-                << " y: " << y 
-                << " rot: " << rot 
+            std::cout << "id: " << playerID
+                << " x: " << x
+                << " y: " << y
+                << " rot: " << rot
                 << " bar rot: " << barRot
+                << " is Alive: " << isAlive
                 << std::endl;
 
 
@@ -133,32 +140,34 @@ void Game::input(SDL_Event& event) {
 }
 
 void Game::update(float deltaTime,SDL_Event e) {
-    input(e);
+    if (isLocalAlive) {
+        input(e);
 
-    auto it = players.find(localplayerID);
-    if (it == players.end() || it->second == nullptr) return;
+        auto it = players.find(localplayerID);
+        if (it == players.end() || it->second == nullptr) return;
 
-    float barrelRot = it->second->barRot;
+        float barrelRot = it->second->barRot;
 
-    // send if something has changed
-    if (localInput != lastSentInput || fabs(barrelRot - lastSentBarrelRot) > 0.01f) {
-        std::string msg = "";
+        // send if something has changed
+        if (localInput != lastSentInput || fabs(barrelRot - lastSentBarrelRot) > 0.01f) {
+            std::string msg = "";
 
-        // movement
-        msg += std::to_string(localInput.moveUp ? 1 : 0);
-        msg += "," + std::to_string(localInput.moveDown ? 1 : 0);
-        msg += "," + std::to_string(localInput.turnLeft ? 1 : 0);
-        msg += "," + std::to_string(localInput.turnRight ? 1 : 0);
-        msg += "," + std::to_string(localInput.shooting ? 1 : 0);
+            // movement
+            msg += std::to_string(localInput.moveUp ? 1 : 0);
+            msg += "," + std::to_string(localInput.moveDown ? 1 : 0);
+            msg += "," + std::to_string(localInput.turnLeft ? 1 : 0);
+            msg += "," + std::to_string(localInput.turnRight ? 1 : 0);
+            msg += "," + std::to_string(localInput.shooting ? 1 : 0);
 
-        // rotation
-        msg += "," + std::to_string(barrelRot);
+            // rotation
+            msg += "," + std::to_string(barrelRot);
 
-        send(msg);
+            send(msg);
 
-        //last sent state
-        lastSentInput = localInput;
-        lastSentBarrelRot = barrelRot;
+            //last sent state
+            lastSentInput = localInput;
+            lastSentBarrelRot = barrelRot;
+        }
     }
 }
 

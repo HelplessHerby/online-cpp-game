@@ -97,7 +97,14 @@ void Player::rotateBarrel(){
 void Player::setBarRot(float newBarRot) {
 	barRot = newBarRot;
 }
-
+void Player::setAlive(float Alive) {
+	if (Alive == 1) {
+		isAlive = true;
+	}
+	else {
+		isAlive = false;
+	}
+}
 Tile::Tile(const char* textureName, float x, float y, SDL_Renderer* renderer) {
 	SDL_Surface* objectSur = IMG_Load(textureName);
 	spriteTexture = SDL_CreateTextureFromSurface(renderer, objectSur);

@@ -12,25 +12,52 @@ public class GameLoop implements Runnable{
     private final levelSystem level;
     private final Set<Socket> levelSent = new HashSet<>();
 
+    public enum gameState {
+        START_LEVEL,
+        DURING_LEVEL,
+        END_LEVEL
+    }
+
+    gameState gs;
+    levelSystem curLevel = null;
+    int levelIndex = 1;
     public GameLoop(Map<String,PlayerManagement> players, Map<Socket, String> socketID){
         this.playersMap=players;
         this.socketIDMap=socketID;
-        levelSystem tempLevel = null;
+        gs = gameState.START_LEVEL;
         try{
             //load first level
-            tempLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
+            curLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
         }catch(IOException e){
             e.printStackTrace();
             System.exit(1);
         }
 
-        this.level = tempLevel;
+        this.level = curLevel;
     }
 
     @Override
     public void run(){
         while(true){                    
-            //PlayerMovement
+            switch (gs) {
+                case START_LEVEL:
+                    try {
+                        levelHandler();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    gs = gameState.DURING_LEVEL;
+                    break;
+                case DURING_LEVEL:
+                    gs = gameState.END_LEVEL;
+                    break;
+                case END_LEVEL:
+
+                    break;
+                default:
+                    break;
+            }
+
             for (String id:playersMap.keySet()){
                 PlayerManagement p = playersMap.get(id);
                 p.movement();
@@ -57,7 +84,18 @@ public class GameLoop implements Runnable{
         }
     }
 
-
+    private void levelHandler() throws IOException {
+        switch (levelIndex) {
+            case 1:
+                curLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
+                break;
+            case 2:
+                curLevel = levelSystem.loadFromCSV("levels/level2.csv", 2);
+                break;
+            default:
+                break;
+        }
+    }
     private void sendGameData(){
         StringBuilder data = new StringBuilder("GAME_DATA");
 
@@ -67,7 +105,8 @@ public class GameLoop implements Runnable{
                 .append(",").append((int)p.x)
                 .append(",").append((int)p.y)
                 .append(",").append((int)p.rot)
-                .append(",").append((int)p.barrelRot);
+                .append(",").append((int)p.barrelRot)
+                .append(",").append((int)p.isAlive);
         }
         String msg = data.toString();
 

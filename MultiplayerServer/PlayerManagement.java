@@ -15,6 +15,7 @@ public class PlayerManagement{
     public boolean left = false;
     public boolean right = false;
 
+    public int isAlive = 1;
     public float rot = 0;
     public float rotationSpeed = 360f;
     public float barrelRot = 0;
@@ -37,7 +38,10 @@ public class PlayerManagement{
         this.barrelRot = barrelRot;
     }
     
-
+    public void spawnPlayer(float spawnX, float spawnY){
+        x = spawnX;
+        y = spawnY;
+    }
     public void movement(){
         double rad = rot * (3.14 / 180.0f);
         if (left) rot -= rotationSpeed * 0.01f;
@@ -93,9 +97,9 @@ public class PlayerManagement{
     }
 
     private boolean collides(levelSystem level, float px, float py) {
-    float left   = px;
-    float right  = px + width;
-    float top    = py;
+    float left = px;
+    float right = px + width;
+    float top = py;
     float bottom = py + height;
 
     return level.isSolid(left,  top)    ||
