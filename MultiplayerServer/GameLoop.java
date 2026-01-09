@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+
 public class GameLoop implements Runnable{
     private Map<String,PlayerManagement> playersMap;
     private Map<Socket, String> socketIDMap;
 
-    private final levelSystem level;
     private final Set<Socket> levelSent = new HashSet<>();
 
     public enum gameState {
@@ -17,15 +17,14 @@ public class GameLoop implements Runnable{
         DURING_LEVEL,
         END_LEVEL
     }
-
-    gameState gs;
+    levelSystem.SpawnPoint sp;
+    gameState gs = gameState.START_LEVEL;
     levelSystem curLevel = null;
     int levelIndex = 1;
     boolean isShooting = false;
     public GameLoop(Map<String,PlayerManagement> players, Map<Socket, String> socketID){
         this.playersMap=players;
-        this.socketIDMap=socketID;
-        gs = gameState.START_LEVEL;
+        this.socketIDMap=socketID;        
         try{
             //load first level
             curLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
@@ -34,7 +33,6 @@ public class GameLoop implements Runnable{
             System.exit(1);
         }
 
-        this.level = curLevel;
     }
 
     @Override
@@ -47,13 +45,14 @@ public class GameLoop implements Runnable{
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    gs = gameState.DURING_LEVEL;
                     break;
                 case DURING_LEVEL:
                     for(String id:playersMap.keySet()){
                         PlayerManagement p = playersMap.get(id);
                         if(p.isAlive == 0){
                              gs = gameState.END_LEVEL;
+                        }else{
+                            duringLevel();
                         }
                     }
                     break;
@@ -63,14 +62,36 @@ public class GameLoop implements Runnable{
                 default:
                     break;
             }
+            //LevelManagement
+            for(Socket s : socketIDMap.keySet()){
+                if(!levelSent.contains(s)){
+                    try{
+                        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                        out.println(curLevel.serialiseLevel());
+                        levelSent.add(s);
+                    }catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-            for (String id:playersMap.keySet()){
-                PlayerManagement p = playersMap.get(id);
-                isShooting = p.Shoot();
-                if(!isShooting){
-                    p.movement();
-                    p.doMove(level);
-                }else{
+
+            sendGameData();
+
+            try{Thread.sleep(16);} catch (Exception e) {}
+        }
+    }
+
+    private void duringLevel(){
+        
+        for (String id:playersMap.keySet()){
+            PlayerManagement p = playersMap.get(id);
+            isShooting = p.Shoot();
+            
+                p.movement();
+                p.doMove(curLevel);
+            if(p.spawned){
+                if(isShooting){
                     System.out.println("Shooting");
                     StringBuilder data = new StringBuilder("SHOOTING");
                     data.append(",").append(id)
@@ -87,34 +108,28 @@ public class GameLoop implements Runnable{
                         } catch(Exception ignored){}
                     }
                 }
+            }else{
+                    p.x = sp.x * levelSystem.SPRITE_SIZE;
+                    p.y = sp.y * levelSystem.SPRITE_SIZE;
+                    p.spawned = true;
+            }
+            
+
+        }   
 
                 
-            }
-
-            //LevelManagement
-            for(Socket s : socketIDMap.keySet()){
-                if(!levelSent.contains(s)){
-                    try{
-                        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-                        out.println(level.serialiseLevel());
-                        levelSent.add(s);
-                    }catch(IOException e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-
-            sendGameData();
-
-            try{Thread.sleep(16);} catch (Exception e) {}
-        }
     }
-
+    
     private void levelHandler() throws IOException {
         switch (levelIndex) {
             case 1:
                 curLevel = levelSystem.loadFromCSV("levels/level1.csv", 1);
+                sp = curLevel.getSpawnPoint(0);
+                for(String id : playersMap.keySet()){
+                    PlayerManagement p = playersMap.get(id);
+
+
+                }
                 break;
             case 2:
                 curLevel = levelSystem.loadFromCSV("levels/level2.csv", 2);
@@ -122,8 +137,11 @@ public class GameLoop implements Runnable{
             default:
                 break;
         }
+
+        gs = gameState.DURING_LEVEL;
     }
     private void sendGameData(){
+        
         if(!isShooting){
             StringBuilder data = new StringBuilder("GAME_DATA");
 
@@ -148,6 +166,6 @@ public class GameLoop implements Runnable{
         {
 
         }
-
+        
     }
 }

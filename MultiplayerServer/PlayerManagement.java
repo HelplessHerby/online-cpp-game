@@ -1,6 +1,6 @@
 public class PlayerManagement{
-    public float x = 50;
-    public float y = 50;
+    public float x;
+    public float y;
     public float width = 32f;
     public float height = 32f;
 
@@ -17,6 +17,7 @@ public class PlayerManagement{
 
     public int isAlive = 1;
     public boolean shooting;
+    public boolean spawned = false;
     public float rot = 0;
     public float rotationSpeed = 360f;
     public float barrelRot = 0;
@@ -45,8 +46,15 @@ public class PlayerManagement{
     }
     
     public void spawnPlayer(float spawnX, float spawnY){
-        x = spawnX;
-        y = spawnY;
+    if (!spawned) { 
+        this.x = spawnX;
+        this.y = spawnY;
+        this.nextX = spawnX;
+        this.nextY = spawnY;
+        this.xVel = 0;
+        this.yVel = 0;
+        this.spawned = true;
+    }
     }
     public void movement(){
         double rad = rot * (3.14 / 180.0f);
@@ -87,7 +95,6 @@ public class PlayerManagement{
     }
 
     public void doMove(levelSystem level) {
-
         // X axis first
         float newX = x + xVel;
         if (!collides(level, newX, y)) {
@@ -124,9 +131,5 @@ public class PlayerManagement{
            level.isSolid(right, top)    ||
            level.isSolid(left,  bottom) ||
            level.isSolid(right, bottom);
-    }
-    public void Spawn(int x, int y){
-        this.x = x + 0.5f;
-        this.y = y + 0.5f;
     }
 }

@@ -78,10 +78,15 @@ public class levelSystem{
         level.tiles = new Tile[height][width];
 
 
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int type = rows.get(y)[x];
 
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                level.tiles[y][x] = new Tile(rows.get(y)[x]);
+                level.tiles[y][x] = new Tile(type);
+
+                if (type == TILE_SPAWN) {
+                    level.spawnPoints.add(new SpawnPoint(x, y));
+                }
             }
         }
         return level;
@@ -156,12 +161,12 @@ public class levelSystem{
         return null;
     }
     return tiles[ty][tx];
-}
+    }
 
     //Spawn Logic
     public SpawnPoint getSpawnPoint(int index){
         if(spawnPoints.isEmpty()) return null;
-        return spawnPoints.get(index % spawnPoints.size());
+        return spawnPoints.get(index);
     }
 
     //Network Sync
