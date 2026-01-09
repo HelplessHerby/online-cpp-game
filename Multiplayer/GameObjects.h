@@ -69,7 +69,11 @@ class Bullet : public GameObject {
 public:
 	Bullet(const char* textureName,float x = 0, float y = 0, SDL_Renderer* renderer = nullptr);
 	void render(SDL_Renderer* renderer);
-
+	void setActive(bool activeStatus) {
+		isActive = activeStatus;
+	}
+	bool getActive() { return isActive; }
+	bool isActive;
 private:
 
 };

@@ -24,6 +24,10 @@ public class PlayerManagement{
     float maxSpeed = 10f;
 	float drag = 0.9f;
 
+    private long lastShotTime = 0;
+    private static final long FIRE_RATE = 500;
+
+
     public void applyInput(
         boolean moveUp, 
         boolean moveDown, 
@@ -72,9 +76,14 @@ public class PlayerManagement{
 
     public boolean Shoot(){
         if(shooting){
-            
+            long now = System.currentTimeMillis();
+            if (now - lastShotTime < FIRE_RATE) {
+                return false;
+            }
+            lastShotTime = now;
             return true;
-        }else{return false;}
+        }
+        return false;
     }
 
     public void doMove(levelSystem level) {

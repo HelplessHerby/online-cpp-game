@@ -74,11 +74,11 @@ public class GameLoop implements Runnable{
                     System.out.println("Shooting");
                     StringBuilder data = new StringBuilder("SHOOTING");
                     data.append(",").append(id)
-                        .append(",").append((int)p.x + 16)
-                        .append(",").append((int)p.y);
+                        .append(",").append((int)p.x)
+                        .append(",").append((int)p.y)
+                        .append(",").append((int)p.barrelRot);
                     
                     String msg = data.toString();
-                    System.out.println(msg);
 
                     for (Socket s : socketIDMap.keySet()){
                         try{

@@ -32,7 +32,9 @@ public:
 	void send(std::string message);
 	void on_receive(std::string message, std::vector<std::string>& args);
 	void update(float deltaTime, SDL_Event e);
+	void levelLoop(SDL_Event e);
 	void welcomeScreen( );
+	void createObjects();
 	void render();
 	bool isRunning()  const { return gameRunning; }
 	void Close();

@@ -2,6 +2,12 @@
 #include <unordered_map>
 #include <unordered_set>
 
+enum GameState {
+    START_LEVEL,
+    DURING_LEVEL,
+    END_LEVEL
+};
+
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::playerInputEvent;
 
@@ -13,6 +19,9 @@ PlayerInputState lastSentInput;
 float lastSentBarrelRot = 0.0f;
 Level* curLevel;
 bool isLocalAlive = true;
+GameState gs = START_LEVEL;
+
+
 
 void Game::send(std::string message) {
     if (!message.empty()) {
@@ -22,7 +31,20 @@ void Game::send(std::string message) {
     }
 }
 
+void Game::createObjects() {
+    for (int i = 0; i < sizeof(bullets) / sizeof(bullets[0]); i++)
+    {
+        bullets[i] = new Bullet("assets/images/bullet.png", -100, -100, renderer);
+        bullets[i]->setActive(false);
+    }
+    gs = DURING_LEVEL;
+}
+
 void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
+    for (std::string& arg : args) {
+        arg.erase(std::remove(arg.begin(), arg.end(), '\r'), arg.end());
+        arg.erase(std::remove(arg.begin(), arg.end(), '\n'), arg.end());
+    }
     if (cmd == "ASSIGN_ID") {
         if (args.empty()) return;
 
@@ -107,7 +129,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         return;
     }
     if (cmd == "SHOOTING") {
-        for (size_t i = 0; i + 3 < args.size(); i += 4) {
+        for (size_t i = 0; i + 3 < args.size(); i += 3) {
             std::string idStr = args[i];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
@@ -115,10 +137,18 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             int playerID = std::stoi(idStr.substr(pos + 1));
             float x = std::stof(args[i+1]);
             float y = std::stof(args[i+2]);
+            float barRot = std::stof(args[i + 3]);
             std::cout<< "ID: "<< playerID << " x: " << x << " y: " << y;
-            bullets[0] = new Bullet("assets / images / bullet.png", x, y, renderer);
+            for (int i = 0; i < sizeof(bullets) / sizeof(bullets[0]); i++)
+            {
+                if (!bullets[i]->getActive()) {
+                    std::cout << "bullet active";
+                    bullets[i]->setPos(x, y, barRot);
+                    bullets[i]->setActive(true);
+                    break;
+                }
+            }
         }
-
     }
     else {
         //std::cout << "Received: " << cmd << std::endl;
@@ -150,8 +180,7 @@ void Game::input(SDL_Event& event) {
     }
     
 }
-
-void Game::update(float deltaTime,SDL_Event e) {
+void Game::levelLoop(SDL_Event e) {
     if (isLocalAlive) {
         input(e);
 
@@ -182,6 +211,17 @@ void Game::update(float deltaTime,SDL_Event e) {
         }
     }
 }
+void Game::update(float deltaTime,SDL_Event e) {
+    switch (gs) {
+    case START_LEVEL:
+        createObjects();
+        break;
+    case DURING_LEVEL:
+        levelLoop(e);
+        break;
+    }
+
+}
 
 void Game::render() {
 
@@ -190,7 +230,9 @@ void Game::render() {
         kv.second->render(renderer);
     }
     for (Bullet* bullet : bullets) {
-        bullet->render(renderer);
+        if (bullet != nullptr) {
+            bullet->render(renderer);
+        }
     }
     curLevel->renderTiles(renderer);
     SDL_RenderPresent(renderer);
