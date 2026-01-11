@@ -91,7 +91,7 @@ public class GameLoop implements Runnable{
             PlayerManagement p = playersMap.get(id);
             isShooting = p.Shoot();
             if(isShooting){
-                spawnBullet(p, id);
+                spawnBullet(p);
             }
             p.movement();
             p.doMove(curLevel);
@@ -100,7 +100,6 @@ public class GameLoop implements Runnable{
                 p.spawned = true;
             }
             if(isShooting){
-                System.out.println("Shooting");
                 StringBuilder data = new StringBuilder("SHOOTING");
                 data.append(",").append(id)
                     .append(",").append((int)p.x)
@@ -166,12 +165,18 @@ public class GameLoop implements Runnable{
         data.append(",BULLETS");
 
         for(bulletManagement b : bulletPool){
-            if(b.isAlive){
-                data.append(",").append((int)b.x)
-                .append(",").append((int)b.y)
-                .append(",").append((int)b.angle);
-                
-            }
+           if(b.isAlive){
+            data.append(",").append(b.id)
+            .append(",").append((int)b.x)
+            .append(",").append((int)b.y)
+            .append(",").append((int)b.angle);
+           }else{
+            data.append(",").append((int)b.id)
+                .append(",").append(-1)
+                .append(",").append(-1)
+                .append(",").append(-1);
+           }
+            
         }
         String msg = data.toString();
 
@@ -187,12 +192,14 @@ public class GameLoop implements Runnable{
     private void initBullets() {
         for(int i = 0; i < MAX_BULLETS; i++) {
             bulletPool[i] = new bulletManagement();
+            bulletPool[i].id = i;
+            bulletPool[i].isAlive = false;
         }
     }   
-    private void spawnBullet(PlayerManagement p, String id) {
+    private void spawnBullet(PlayerManagement p) {
     for (bulletManagement b : bulletPool) {
         if (!b.isAlive) {
-                b.spawn(p.x, p.y, p.barrelRot, id);
+                b.spawn(p.x, p.y, p.barrelRot);
                 return;
             }
         }

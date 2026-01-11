@@ -77,20 +77,20 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
     }
     else if (cmd == "GAME_DATA") {
         std::unordered_set<int> serverIDs;
+        size_t i = 0;
         //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation, Alive status
-        for (size_t i = 0; i + 3 < args.size(); i += 6) {
-            std::string idStr = args[i];
+        while (i < args.size() && args[i] != "BULLETS") {
+            std::string idStr = args[i++];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
-
             int playerID = std::stoi(idStr.substr(pos + 1));
-            float x = std::stof(args[i + 1]);
-            float y = std::stof(args[i + 2]);
-            float rot = std::stof(args[i + 3]);
-            float barRot = std::stof(args[i + 4]);
-            float isAlive = std::stof(args[i + 5]);
+            float x = std::stof(args[i++]);
+            float y = std::stof(args[i++]);
+            float rot = std::stof(args[i++]);
+            float barRot = std::stof(args[i++]);
+            float isAlive = std::stof(args[i++]);
             serverIDs.insert(playerID);
-
+            
             //Creates Player incase doesn't exist
             if (players.find(playerID) == players.end()) {
                 players[playerID] = new Player("assets/images/testPlayer.png",
@@ -125,6 +125,27 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             else {
                 ++it;
             }
+        }
+        //Bullets
+        if (i < args.size() && args[i] == "BULLETS") {
+            i++; //Skip BULLETS
+            while (i + 3 < args.size()) {
+                int ownerID = std::stoi(args[i++]);
+                float bulX = std::stof(args[i++]);
+                float bulY = std::stof(args[i++]);
+                float angle = std::stof(args[i++]);
+
+                Bullet* bullet = bullets[ownerID];
+                if (bulX < 0 || bulY < 0) {
+                    bullet->setActive(false);
+                }
+                else {
+                    bullet->setPos(bulX, bulY, angle);
+                    bullet->setActive(true);
+                }
+            }
+
+
         }
         return;
     }
