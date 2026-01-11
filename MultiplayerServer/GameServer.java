@@ -2,33 +2,137 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
+import java.awt.*;
 
-public class GameServer {
+public class GameServer extends JFrame{
+    private JTextArea consoleArea;
+    private JButton startButton;
+    private JButton stopButton;
+    ServerSocket serverSocket;
+    private Thread serverThread;
+    private boolean serverRunning = false;
 
     private static int playerCount = 1;
     private static Map<String, PlayerManagement> players = new HashMap<>();
     private static Map<Socket, String> socketToID = new HashMap<>();
 
-    public static void main(String[] args) {
-        int port = 55555; 
-        System.out.println("[Server] Starting on port " + port);
+    public GameServer(){
+        setTitle("Herby's Tanks Server");
+        setSize(600,400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        Thread gameLoopThread = new Thread(new GameLoop(players,socketToID));
-        gameLoopThread.start();
+        //Console
+        consoleArea = new JTextArea();
+        consoleArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(consoleArea);
+        add(scrollPane,BorderLayout.CENTER);
 
-        try (ServerSocket server = new ServerSocket(port)) {
+        //Buttons
+        JPanel buttonPanel = new JPanel();
+        startButton = new JButton("Start Server");
+        stopButton = new JButton("Stop Server");
+        stopButton.setEnabled(false);
+        buttonPanel.add(startButton);
+        buttonPanel.add(stopButton);
+        add(buttonPanel,BorderLayout.SOUTH);
+
+        //System out into the console
+        PrintStream printStream = new PrintStream(new OutputStream(){
+            @Override
+            public void write(int b){
+                consoleArea.append(String.valueOf((char)b));
+                consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
+            }
+        });
+        System.setOut(printStream);
+        System.setErr(printStream);
+
+        //Button Logic
+        startButton.addActionListener(e -> startServer());
+        stopButton.addActionListener(e->stopServer());
+    }
+
+    private void startServer(){
+            if (serverRunning) return;
+    serverRunning = true;
+
+    serverThread = new Thread(() -> {
+        int port = 55555;
+
+
+
+        try {
+            serverSocket = new ServerSocket(port);
+            System.out.println("[Server] Starting on port " + port);
             System.out.println("[Server] Waiting for clients...");
 
-            while (true) {
-                Socket socket = server.accept();
-                handleNewPlayer(socket);
+            while (serverRunning) {
+                try {
+                    Socket socket = serverSocket.accept();
+                    handleNewPlayer(socket);
+                } catch (SocketException se) {
+                    if (serverRunning) System.out.println("[Server] Socket exception: " + se);
+                } catch (IOException e) {
+                    System.out.println("[Server] IOException: " + e);
+                }
             }
+
+        } catch (IOException e) {
+            if (serverRunning) System.out.println("[Server] Failed to start: " + e);
+        } finally {
+            if(serverSocket != null && !serverSocket.isClosed()){
+                try{
+                    serverSocket.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+            System.out.println("[Server] Server stopped.");
         }
-        
-    catch (IOException e){
-        e.printStackTrace();
+    });
+
+    serverThread.start();
+    startButton.setEnabled(false);
+    stopButton.setEnabled(true);
     }
+
+
+
+private void stopServer() {
+    if (!serverRunning) return;
+    serverRunning = false;
+
+    if(serverSocket != null && !serverSocket.isClosed()){
+        try{
+            serverSocket.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    if (serverThread != null && serverThread.isAlive()) {
+        try {
+            serverThread.join(500); // wait for thread to exit cleanly
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    startButton.setEnabled(true);
+    stopButton.setEnabled(false);
+    System.out.println("[Server] Closed");
 }
+    public static void main(String[] args) {
+        // Start the game loop
+        Thread gameLoopThread = new Thread(new GameLoop(players, socketToID));
+        gameLoopThread.start();
+        SwingUtilities.invokeLater(() -> {
+            GameServer gui = new GameServer();
+            gui.setVisible(true);
+        });
+    }
 
     private static void handleNewPlayer(Socket socket){
         new Thread(() -> {

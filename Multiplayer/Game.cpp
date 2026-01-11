@@ -106,6 +106,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             }
             else { isLocalAlive = false; }
             //Console Output
+            
             std::cout << "id: " << playerID
                 << " x: " << x
                 << " y: " << y
@@ -113,7 +114,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
                 << " bar rot: " << barRot
                 << " is Alive: " << isAlive
                 << std::endl;
-
+            
 
         }
         //deletes players
@@ -127,7 +128,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             }
         }
         //Bullets
-        if (i < args.size() && args[i] == "BULLETS") {
+        while (i < args.size() && args[i] == "BULLETS") {
             i++; //Skip BULLETS
             while (i + 3 < args.size()) {
                 int ownerID = std::stoi(args[i++]);
