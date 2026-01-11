@@ -169,12 +169,14 @@ public class GameLoop implements Runnable{
             data.append(",").append(b.id)
             .append(",").append((int)b.x)
             .append(",").append((int)b.y)
-            .append(",").append((int)b.angle);
+            .append(",").append((int)b.angle)
+            .append(",").append(b.isAlive);
            }else{
             data.append(",").append((int)b.id)
                 .append(",").append(-1)
                 .append(",").append(-1)
-                .append(",").append(-1);
+                .append(",").append(-1)
+                .append(",").append(b.isAlive);
            }
             
         }

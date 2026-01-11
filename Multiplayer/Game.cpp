@@ -130,14 +130,17 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         //Bullets
         while (i < args.size() && args[i] == "BULLETS") {
             i++; //Skip BULLETS
-            while (i + 3 < args.size()) {
+            while (i + 4 < args.size()) {
                 int ownerID = std::stoi(args[i++]);
                 float bulX = std::stof(args[i++]);
                 float bulY = std::stof(args[i++]);
                 float angle = std::stof(args[i++]);
-
+                std::string isAliveStr = args[i++];
+                std::cout << "Bullet x:" << bulX;
+                bool isAlive = (isAliveStr == "true");
                 Bullet* bullet = bullets[ownerID];
-                if (bulX < 0 || bulY < 0) {
+                if (!isAlive) {
+                    bullet->setPos(bulX, bulY, angle);
                     bullet->setActive(false);
                 }
                 else {
