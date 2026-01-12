@@ -10,6 +10,7 @@ public class levelSystem{
     public static final int TILE_BREAKABLE = 2;
     public static final int TILE_HOLE = 3;
     public static final int TILE_SPAWN = 4;
+    public static final int TILE_ENEMY_SPAWN = 5;
     public static final int SPRITE_SIZE = 32;
 
     private int levelID;
@@ -185,7 +186,7 @@ public class levelSystem{
         }
 
         public boolean isWalkable(){
-            return type == TILE_EMPTY || type == TILE_SPAWN;
+            return type == TILE_EMPTY || type == TILE_SPAWN || type == TILE_ENEMY_SPAWN;
         }
 
         public boolean isSolid(){
