@@ -40,7 +40,6 @@ public class GameServer extends JFrame{
 
         //System out into the console
         PrintStream printStream = new PrintStream(new OutputStream(){
-            @Override
             public void write(int b){
                 consoleArea.append(String.valueOf((char)b));
                 consoleArea.setCaretPosition(consoleArea.getDocument().getLength());
@@ -60,9 +59,6 @@ public class GameServer extends JFrame{
 
     serverThread = new Thread(() -> {
         int port = 55555;
-
-
-
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("[Server] Starting on port " + port);
@@ -114,7 +110,7 @@ private void stopServer() {
 
     if (serverThread != null && serverThread.isAlive()) {
         try {
-            serverThread.join(500); // wait for thread to exit cleanly
+            serverThread.join(500); // wait for thread to exit 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -125,7 +121,6 @@ private void stopServer() {
     System.out.println("[Server] Closed");
 }
     public static void main(String[] args) {
-        // Start the game loop
         Thread gameLoopThread = new Thread(new GameLoop(players, socketToID));
         gameLoopThread.start();
         SwingUtilities.invokeLater(() -> {
@@ -137,12 +132,10 @@ private void stopServer() {
     private static void handleNewPlayer(Socket socket){
         new Thread(() -> {
             try{
-                //Assign ID
                 String playerID = assignPlayerID(socket);
-                //Assign player
                 PlayerManagement newPlayer = new PlayerManagement();
                 players.put(playerID, newPlayer);
-                //Input Output streams
+
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 
@@ -244,7 +237,6 @@ private void stopServer() {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
     }
     }
 }

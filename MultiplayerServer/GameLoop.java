@@ -1,9 +1,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class GameLoop implements Runnable{
@@ -13,7 +11,6 @@ public class GameLoop implements Runnable{
     private static final int MAX_BULLETS = 10;
     private final bulletManagement[] bulletPool = new bulletManagement[MAX_BULLETS];
     private final Set<Socket> levelSent = new HashSet<>();
-
     public enum gameState {
         START_LEVEL,
         DURING_LEVEL,
@@ -45,20 +42,21 @@ public class GameLoop implements Runnable{
                 case START_LEVEL:
                     try {
                         levelHandler();
+                        spawnPlayer();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     break;
                 case DURING_LEVEL:
-                    for(String id:playersMap.keySet()){
-                        PlayerManagement p = playersMap.get(id);
+                    for(PlayerManagement p : playersMap.values()){
                         if(p.isAlive == 0){
-                             gs = gameState.END_LEVEL;
-                        }else{
-                            duringLevel();
+                            gs = gameState.END_LEVEL;
+                            return;
                         }
                     }
+                    duringLevel();
                     break;
+                    
                 case END_LEVEL:
 
                     break;
@@ -89,7 +87,7 @@ public class GameLoop implements Runnable{
         
         for (String id:playersMap.keySet()){
             PlayerManagement p = playersMap.get(id);
-            isShooting = p.Shoot();
+            isShooting = p.Shoot(p.id);
             if(isShooting){
                 spawnBullet(p);
             }
@@ -120,7 +118,8 @@ public class GameLoop implements Runnable{
         }   
         for (bulletManagement b : bulletPool) {
             b.update(curLevel);
-    }
+            b.checkPlayerCollision(playersMap);
+        }
                 
     }
     
@@ -138,20 +137,26 @@ public class GameLoop implements Runnable{
 
         gs = gameState.DURING_LEVEL;
     }
+
+    //Spawns player at corresponding spawn point
     private void spawnPlayer(){
-                sp = curLevel.getSpawnPoint(0);
+        int index = 0;
                 for(String id : playersMap.keySet()){
+                    sp = curLevel.getSpawnPoint(index);
+                    index++;
                     PlayerManagement p = playersMap.get(id);
                     p.x = sp.x * levelSystem.SPRITE_SIZE;
                     p.y = sp.y * levelSystem.SPRITE_SIZE;
                     p.xVel = 0;
                     p.yVel = 0;
                     p.spawned = true;
+                    p.id = id;
                 }
     }
     private void sendGameData(){
         StringBuilder data = new StringBuilder("GAME_DATA");
 
+        //Player Server Data
         for(String id : playersMap.keySet()) {
             PlayerManagement p = playersMap.get(id);
             data.append(",").append(id)
@@ -162,6 +167,7 @@ public class GameLoop implements Runnable{
                 .append(",").append((int)p.isAlive);
         }
 
+        //bullet Server Data
         data.append(",BULLETS");
 
         for(bulletManagement b : bulletPool){
@@ -201,7 +207,9 @@ public class GameLoop implements Runnable{
     private void spawnBullet(PlayerManagement p) {
     for (bulletManagement b : bulletPool) {
         if (!b.isAlive) {
+                b.ownerID = p.id;
                 b.spawn(p.x, p.y, p.barrelRot);
+                System.out.println("Bullet id: " + b.ownerID + " Player id: " + p.id);
                 return;
             }
         }

@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class bulletManagement {
     public float x,y;
     public float velX,velY;
@@ -6,7 +8,7 @@ public class bulletManagement {
     public float id;
     public boolean isAlive = true;
 
-    public int bouncesLeft = 3;
+    public int bouncesLeft = 2;
     public float time;
     public float maxLifetime = 300;
 
@@ -80,5 +82,34 @@ public class bulletManagement {
            level.isSolid(right, top)    ||
            level.isSolid(left,  bottom) ||
            level.isSolid(right, bottom);
+    }
+
+    public void checkPlayerCollision(Map<String, PlayerManagement> players){
+        if(!isAlive) return;
+
+        for(PlayerManagement p : players.values()){
+            if(p.isAlive == 0) continue;
+
+            //Shoota check 🤑🤑
+            if(p.id.equals(ownerID)) continue;
+
+            if(checkIntersect(x, y, 16, p.x, p.y, 32)){
+                p.isAlive = 0;
+                isAlive = false;
+
+                System.out.println("[Server] Player " + p.id + " was hit!");
+                return;
+            }
+        }
+    }
+
+    private boolean checkIntersect(
+        float ax, float ay, int aSize,
+        float bx, float by, int bSize
+    ){
+        return ax < bx + bSize &&
+               ax + aSize > bx && 
+               ay < by + bSize &&
+               ay + aSize > by;
     }
 }

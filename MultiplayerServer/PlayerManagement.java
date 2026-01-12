@@ -9,6 +9,7 @@ public class PlayerManagement{
 
     public float xVel = 0;
     public float yVel = 0;
+    public String id;
 
     public boolean up = false;
     public boolean down = false;
@@ -45,7 +46,7 @@ public class PlayerManagement{
         this.shooting = shooting;
     }
     
-    public void spawnPlayer(float spawnX, float spawnY){
+    public void spawnPlayer(float spawnX, float spawnY ){
     if (!spawned) { 
         this.x = spawnX;
         this.y = spawnY;
@@ -81,8 +82,7 @@ public class PlayerManagement{
         nextX = x + xVel;
         nextY = y + yVel;
     }
-
-    public boolean Shoot(){
+    public boolean Shoot(String thisID){
         if(shooting){
             long now = System.currentTimeMillis();
             if (now - lastShotTime < FIRE_RATE) {
@@ -95,7 +95,6 @@ public class PlayerManagement{
     }
 
     public void doMove(levelSystem level) {
-        // X axis first
         float newX = x + xVel;
         if (!collides(level, newX, y)) {
             x = newX;
@@ -103,7 +102,6 @@ public class PlayerManagement{
             xVel = 0;
         }
 
-        // Y axis second
         float newY = y + yVel;
         if (!collides(level, x, newY)) {
             y = newY;
@@ -127,9 +125,9 @@ public class PlayerManagement{
     float top = py;
     float bottom = py + height;
 
-    return level.isSolid(left,  top)    ||
-           level.isSolid(right, top)    ||
-           level.isSolid(left,  bottom) ||
-           level.isSolid(right, bottom);
+    return level.isSolid(left,  top)    
+        || level.isSolid(right, top)   
+        || level.isSolid(left,  bottom) 
+        || level.isSolid(right, bottom);
     }
 }

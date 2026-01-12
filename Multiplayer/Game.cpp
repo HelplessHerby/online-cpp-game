@@ -61,7 +61,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             //Spawn Local player
         if (players.find(localplayerID) == players.end()) {
                 players[localplayerID] = new Player(
-                "assets/images/testPlayer.png",
+                "assets/images/player.png",
                 localplayerID,
                 200, 200,
                 renderer
@@ -79,7 +79,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         std::unordered_set<int> serverIDs;
         size_t i = 0;
         //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation, Alive status
-        while (i < args.size() && args[i] != "BULLETS") {
+        while (i < args.size() && args[i] != "BULLETS" && args[i] != "ENEMIES") {
             std::string idStr = args[i++];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
@@ -93,7 +93,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             
             //Creates Player incase doesn't exist
             if (players.find(playerID) == players.end()) {
-                players[playerID] = new Player("assets/images/testPlayer.png",
+                players[playerID] = new Player("assets/images/player.png",
                     playerID, (int)x,(int) y, renderer);
             }
             //Update Player
@@ -101,10 +101,9 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             players[playerID]->setBarRot(barRot);
             players[playerID]->setAlive(isAlive);
             //PlayerAlive
-            if (isAlive == 1) {
-                isLocalAlive = true;
+            if (playerID == localplayerID) {
+                isLocalAlive = (isAlive == 1);
             }
-            else { isLocalAlive = false; }
             //Console Output
             
             std::cout << "id: " << playerID
@@ -128,7 +127,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             }
         }
         //Bullets
-        while (i < args.size() && args[i] == "BULLETS") {
+        if (i < args.size() && args[i] == "BULLETS") {
             i++; //Skip BULLETS
             while (i + 4 < args.size()) {
                 int ownerID = std::stoi(args[i++]);
@@ -255,9 +254,11 @@ void Game::render() {
         kv.second->render(renderer);
     }
     for (Bullet* bullet : bullets) {
-        if (bullet != nullptr) {
+
+        if (bullet && bullet->getActive()) {
             bullet->render(renderer);
         }
+
     }
     curLevel->renderTiles(renderer);
     SDL_RenderPresent(renderer);

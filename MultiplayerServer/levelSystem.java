@@ -10,7 +10,6 @@ public class levelSystem{
     public static final int TILE_BREAKABLE = 2;
     public static final int TILE_HOLE = 3;
     public static final int TILE_SPAWN = 4;
-    public static final int TILE_ENEMY_SPAWN = 5;
     public static final int SPRITE_SIZE = 32;
 
     private int levelID;
@@ -18,10 +17,6 @@ public class levelSystem{
     private int height;
 
     private Tile[][] tiles;
-
-    //Dynamic Tiles
-    private final List<TileChange> tileChanges = new ArrayList<>();
-
     //Player Spawn
     private final List<SpawnPoint> spawnPoints = new ArrayList<>();
 
@@ -44,7 +39,7 @@ public class levelSystem{
         return sb.toString();
     }
 
-    //Load Level from csv
+    //Load Level from csv 
     public static levelSystem loadFromCSV(String path, int levelID) throws IOException{
         List<int[]> rows = new ArrayList<>();
 
@@ -71,7 +66,7 @@ public class levelSystem{
         int width = rows.get(0).length;
 
 
-        //Init
+        //Init level
         levelSystem level = new levelSystem();
         level.levelID = levelID;
         level.width = width;
@@ -99,7 +94,6 @@ public class levelSystem{
         this.height = tileMap.length;
 
         tiles = new Tile[height][width];
-        tileChanges.clear();
         spawnPoints.clear();
 
         for(int y = 0; y < height; y++){
@@ -120,13 +114,13 @@ public class levelSystem{
 
     //Collisions
     public boolean isWalkable(float x, float y){
-        Tile tile = getTileFromWorld(x,y);
+        Tile tile = getTileFromLevel(x,y);
         if(tile == null) return true;
 
         return tile.isWalkable();
     }
     public boolean isSolid(float x,float y){
-        Tile tile = getTileFromWorld(x,y);
+        Tile tile = getTileFromLevel(x,y);
         if(tile == null) return false;
 
         return tile.isSolid();
@@ -138,18 +132,12 @@ public class levelSystem{
         int ty = (int)Math.floor(y / SPRITE_SIZE);
 
         if(!inBounds(ty,tx)) return;
-
-        Tile tile = tiles[ty][tx];
-        if(tile.type == TILE_BREAKABLE){
-            tile.type = TILE_EMPTY;
-            tileChanges.add(new TileChange(tx,ty,TILE_EMPTY));
-        }
     }
 
     //Tile Logic
-    private Tile getTileFromWorld(float wx, float wy) {
-        int tx = (int)Math.floor(wx /SPRITE_SIZE);
-        int ty = (int)Math.floor(wy / SPRITE_SIZE);
+    private Tile getTileFromLevel(float lx, float ly) {
+        int tx = (int)Math.floor(lx /SPRITE_SIZE);
+        int ty = (int)Math.floor(ly / SPRITE_SIZE);
         return getTile(tx, ty);
     }
 
@@ -170,14 +158,7 @@ public class levelSystem{
         return spawnPoints.get(index);
     }
 
-    //Network Sync
-    public List<TileChange> networkTileChanges(){
-        List<TileChange> tc = new ArrayList<>(tileChanges);
-        tileChanges.clear();
-        return tc;
-    }
 
-    //Classes
     public static class Tile{
         public int type;
 
@@ -186,23 +167,11 @@ public class levelSystem{
         }
 
         public boolean isWalkable(){
-            return type == TILE_EMPTY || type == TILE_SPAWN || type == TILE_ENEMY_SPAWN;
+            return type == TILE_EMPTY || type == TILE_SPAWN;
         }
 
         public boolean isSolid(){
             return type == TILE_WALL || type == TILE_BREAKABLE;
-        }
-    }
-
-    public static class TileChange{
-        public final int x;
-        public final int y;
-        public final int newType;
-
-        public TileChange(int x , int y, int newType){
-            this.x = x;
-            this.y = y;
-            this.newType = newType;
         }
     }
 
