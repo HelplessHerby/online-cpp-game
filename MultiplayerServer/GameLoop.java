@@ -84,7 +84,7 @@ public class GameLoop implements Runnable{
         for(String id :playersMap.keySet()){
             PlayerManagement p = playersMap.get(id);
             if(!p.spawned && p.isAlive == 1){
-                            //LevelManagement
+            //LevelManagement
             for(Socket s : socketIDMap.keySet()){
                 if(!levelSent.contains(s)){
                     try{
@@ -102,12 +102,10 @@ public class GameLoop implements Runnable{
         for (String id:playersMap.keySet()){
             PlayerManagement p = playersMap.get(id);
             if(p.isAlive == 0) continue;
-
             isShooting = p.Shoot(p.id);
             if(isShooting){
                 spawnBullet(p);
             }
-
             p.movement();
             p.doMove(curLevel);
             if(isShooting){
@@ -126,13 +124,10 @@ public class GameLoop implements Runnable{
                     } catch(Exception ignored){}
                 }
             }
-            
-
         }   
         for (bulletManagement b : bulletPool) {
             b.checkPlayerCollision(playersMap);
             b.update(curLevel);
-
         }
         if(alivePlayers() <= 1 && spawnedPlayers() >= 2){
             gs = gameState.END_LEVEL;

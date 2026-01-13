@@ -90,7 +90,7 @@ public class bulletManagement {
         for(PlayerManagement p : players.values()){
             if(p.isAlive == 0) continue;
 
-            //Shoota check 🤑🤑
+            //Shoota check 
             if(p.id.equals(ownerID)) continue;
 
             if(checkIntersect(x, y, 16, p.x, p.y, 32)){
