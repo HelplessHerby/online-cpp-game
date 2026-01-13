@@ -176,7 +176,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         }
     }
     else {
-        //std::cout << "Received: " << cmd << std::endl;
+        std::cout << "Received: " << cmd << std::endl;
     }
 }
 
@@ -196,12 +196,12 @@ void Game::input(SDL_Event& event) {
         case SDLK_SPACE: localInput.shooting = down; break;
         }
     }
-    auto it = players.find(localplayerID);
-    if (it != players.end() && it->second != nullptr) {
+    auto localPlayer = players.find(localplayerID);
+    if (localPlayer != players.end() && localPlayer->second != nullptr) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
-        it->second->setMousePos(mouseX, mouseY);
-        it->second->rotateBarrel();
+        localPlayer->second->setMousePos(mouseX, mouseY);
+        localPlayer->second->rotateBarrel();
     }
     
 }
@@ -209,10 +209,10 @@ void Game::levelLoop(SDL_Event e) {
     if (isLocalAlive) {
         input(e);
 
-        auto it = players.find(localplayerID);
-        if (it == players.end() || it->second == nullptr) return;
+        auto localPlayer = players.find(localplayerID);
+        if (localPlayer == players.end() || localPlayer->second == nullptr) return;
 
-        float barrelRot = it->second->barRot;
+        float barrelRot = localPlayer->second->barRot;
 
         // send if something has changed
         if (localInput != lastSentInput || fabs(barrelRot - lastSentBarrelRot) > 0.01f) {
@@ -251,8 +251,8 @@ void Game::update(float deltaTime,SDL_Event e) {
 void Game::render() {
 
     background->render(renderer);
-    for (auto& kv : players) {
-        kv.second->render(renderer);
+    for (auto& p : players) {
+        p.second->render(renderer);
     }
     for (Bullet* bullet : bullets) {
 
