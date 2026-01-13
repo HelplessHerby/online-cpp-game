@@ -15,7 +15,7 @@ std::string trim(const std::string& s) {
 }
 
 void Level::levelMessage(const std::vector<std::string>& args) {
-	
+	tiles.clear();
 	if (args.size() < 4) return;
 	 this->levelID = std::stoi(args[0]);
 	 this->width = std::stoi(args[1]);

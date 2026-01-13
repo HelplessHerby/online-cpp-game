@@ -1,4 +1,8 @@
-﻿  Game.cpp
-C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(97,44): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Game.cpp(97,36): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿  Level.cpp
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(35,18): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(36,18): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(41,62): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(41,56): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(44,62): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\Level.cpp(44,56): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Multiplayer.vcxproj -> C:\Users\harve\Desktop\Uni\Multiplayer\online-cpp-game\Multiplayer\x64\Debug\Multiplayer.exe

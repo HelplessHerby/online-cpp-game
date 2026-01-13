@@ -1,6 +1,6 @@
 public class PlayerManagement{
-    public float x;
-    public float y;
+    public float x ;
+    public float y ;
     public float width = 32f;
     public float height = 32f;
 

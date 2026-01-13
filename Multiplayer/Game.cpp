@@ -79,7 +79,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
         std::unordered_set<int> serverIDs;
         size_t i = 0;
         //Each player in chunks of 5 : ID, X, Y, Rotation, Barrel Rotation, Alive status
-        while (i < args.size() && args[i] != "BULLETS" && args[i] != "ENEMIES") {
+        while (i < args.size() && args[i] != "BULLETS") {
             std::string idStr = args[i++];
             size_t pos = idStr.find(":");
             if (pos == std::string::npos) continue;
@@ -93,7 +93,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             
             //Creates Player incase doesn't exist
             if (players.find(playerID) == players.end()) {
-                players[playerID] = new Player("assets/images/player.png",
+                players[playerID] = new Player("assets/images/enemy.png",
                     playerID, (int)x,(int) y, renderer);
             }
             //Update Player
@@ -101,6 +101,7 @@ void Game::on_receive(std::string cmd, std::vector<std::string>& args) {
             players[playerID]->setBarRot(barRot);
             players[playerID]->setAlive(isAlive);
             //PlayerAlive
+
             if (playerID == localplayerID) {
                 isLocalAlive = (isAlive == 1);
             }

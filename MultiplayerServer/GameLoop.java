@@ -40,9 +40,15 @@ public class GameLoop implements Runnable{
         while(true){                    
             switch (gs) {
                 case START_LEVEL:
+                    for(PlayerManagement p : playersMap.values()){
+                        p.spawned = false;
+                        p.isAlive = 1;
+                        p.xVel = 0;
+                        p.yVel = 0;
+                        p.yVel = 0;
+                    }
                     try {
                         levelHandler();
-                        spawnPlayer();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -50,20 +56,35 @@ public class GameLoop implements Runnable{
                 case DURING_LEVEL:
                     for(PlayerManagement p : playersMap.values()){
                         if(p.isAlive == 0){
-                            gs = gameState.END_LEVEL;
-                            return;
+                              
                         }
                     }
                     duringLevel();
                     break;
                     
                 case END_LEVEL:
-
+                    levelSent.clear();
+                    if(levelIndex == 5) levelIndex = 0;
+                    levelIndex++;
+                    gs = gameState.START_LEVEL;
                     break;
                 default:
                     break;
             }
-            //LevelManagement
+
+
+
+            sendGameData();
+
+            try{Thread.sleep(16);} catch (Exception e) {}
+        }
+    }
+
+    private void duringLevel(){
+        for(String id :playersMap.keySet()){
+            PlayerManagement p = playersMap.get(id);
+            if(!p.spawned && p.isAlive == 1){
+                            //LevelManagement
             for(Socket s : socketIDMap.keySet()){
                 if(!levelSent.contains(s)){
                     try{
@@ -75,28 +96,20 @@ public class GameLoop implements Runnable{
                     }
                 }
             }
-
-
-            sendGameData();
-
-            try{Thread.sleep(16);} catch (Exception e) {}
+                spawnPlayer(p, id);
+            }
         }
-    }
-
-    private void duringLevel(){
-        
         for (String id:playersMap.keySet()){
             PlayerManagement p = playersMap.get(id);
+            if(p.isAlive == 0) continue;
+
             isShooting = p.Shoot(p.id);
             if(isShooting){
                 spawnBullet(p);
             }
+
             p.movement();
             p.doMove(curLevel);
-            if(!p.spawned){
-                spawnPlayer();
-                p.spawned = true;
-            }
             if(isShooting){
                 StringBuilder data = new StringBuilder("SHOOTING");
                 data.append(",").append(id)
@@ -117,12 +130,30 @@ public class GameLoop implements Runnable{
 
         }   
         for (bulletManagement b : bulletPool) {
-            b.update(curLevel);
             b.checkPlayerCollision(playersMap);
+            b.update(curLevel);
+
         }
-                
+        if(alivePlayers() <= 1 && spawnedPlayers() >= 2){
+            gs = gameState.END_LEVEL;
+        }    
     }
-    
+    private int spawnedPlayers(){
+        int count = 0;
+        for(PlayerManagement p : playersMap.values()){
+            if(p.spawned) count++;
+            
+        }
+        return count;
+    }
+    private int alivePlayers(){
+        int count = 0;
+        for(PlayerManagement p : playersMap.values()){
+            if(p.isAlive == 1 && p.spawned) count++;
+            
+        }
+        return count;
+    }
     private void levelHandler() throws IOException {
         switch (levelIndex) {
             case 1:
@@ -131,27 +162,31 @@ public class GameLoop implements Runnable{
             case 2:
                 curLevel = levelSystem.loadFromCSV("levels/level2.csv", 2);
                 break;
+            case 3:
+                curLevel = levelSystem.loadFromCSV("levels/level3.csv", 3);
+                break;
+            case 4:
+                curLevel = levelSystem.loadFromCSV("levels/level4.csv", 4);
+                break;
+            case 5:
+                curLevel = levelSystem.loadFromCSV("levels/level5.csv", 5);
+                break;
             default:
                 break;
         }
-
+        
         gs = gameState.DURING_LEVEL;
     }
 
     //Spawns player at corresponding spawn point
-    private void spawnPlayer(){
-        int index = 0;
-                for(String id : playersMap.keySet()){
-                    sp = curLevel.getSpawnPoint(index);
-                    index++;
-                    PlayerManagement p = playersMap.get(id);
-                    p.x = sp.x * levelSystem.SPRITE_SIZE;
-                    p.y = sp.y * levelSystem.SPRITE_SIZE;
-                    p.xVel = 0;
-                    p.yVel = 0;
-                    p.spawned = true;
-                    p.id = id;
-                }
+    private void spawnPlayer(PlayerManagement p , String id){
+        sp = curLevel.getSpawnPoint();
+        p.spawnPlayer(sp.x * 32,sp.y*32);
+        p.isAlive = 1;
+        p.id = id;
+        p.spawned = true;
+
+        
     }
     private void sendGameData(){
         StringBuilder data = new StringBuilder("GAME_DATA");
@@ -207,6 +242,7 @@ public class GameLoop implements Runnable{
     private void spawnBullet(PlayerManagement p) {
     for (bulletManagement b : bulletPool) {
         if (!b.isAlive) {
+            System.out.println("Bullet owner " + b.ownerID + " p id" + p.id);
                 b.ownerID = p.id;
                 b.spawn(p.x, p.y, p.barrelRot);
                 System.out.println("Bullet id: " + b.ownerID + " Player id: " + p.id);

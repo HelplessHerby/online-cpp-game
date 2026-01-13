@@ -87,26 +87,6 @@ public class levelSystem{
         }
         return level;
     }
-    //Load Level
-    public void loadLevel(int id, int[][] tileMap){
-        this.levelID = id;
-        this.width = tileMap[0].length;
-        this.height = tileMap.length;
-
-        tiles = new Tile[height][width];
-        spawnPoints.clear();
-
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                int type = tileMap[y][x];
-                tiles[y][x] = new Tile(type);
-                if(type == TILE_SPAWN){
-                    spawnPoints.add(new SpawnPoint(x, y));
-                }
-            }
-        }
-
-    }
 
     public int getLevelId(){
         return levelID;
@@ -153,8 +133,11 @@ public class levelSystem{
     }
 
     //Spawn Logic
-    public SpawnPoint getSpawnPoint(int index){
+    public SpawnPoint getSpawnPoint(){
         if(spawnPoints.isEmpty()) return null;
+
+        Random rand = new Random();
+        int index = rand.nextInt(spawnPoints.size());
         return spawnPoints.get(index);
     }
 
